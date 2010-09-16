@@ -21,6 +21,8 @@ class ScmsController extends OntoWiki_Controller_Component
     const SCMS_ANNOTATE         = 'http://ns.aksw.org/scms/annotate';
     const SCMS_CALLBACKENDPOINT = 'http://ns.aksw.org/scms/callbackEndpoint';
     
+    protected $_nodes = array();
+    
     /**
      * Expects an annotation request described using the scms vocabulary.
      * It stores the node and creates an scms task which is then added to 
@@ -88,15 +90,29 @@ class ScmsController extends OntoWiki_Controller_Component
     
     protected function _getRequestName($index)
     {
-        
     }
     
     protected function _getCallbackUri($index)
     {
-        
     }
     
     protected function _getNode($index)
+    {
+    }
+    
+    protected function _addNode($nodeStatements)
+    {
+        $keys = array_keys($nodeStatements);
+        if (count($keys) > 0) {
+            $nodeUri = $key[0];
+            
+            if (!isset($this->_nodes[$nodeUri])) {
+                $this->_nodes[$nodeUri] = $nodeStatements[$nodeUri];
+            }
+        }
+    }
+    
+    protected function _analyzeStatements($index)
     {
         foreach ($index as $requestUri => $requestData) {
             if (isset($requestData[SCMS_DOCUMENT])) {
