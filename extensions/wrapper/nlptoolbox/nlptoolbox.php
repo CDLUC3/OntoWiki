@@ -43,6 +43,12 @@ class NlptoolboxWrapper extends Erfurt_Wrapper
      */
     protected $_uri = null;
     
+    /**
+     * The properties to be used for annotation.
+     * @var null|array
+     */
+    protected $_textProperties = null;
+    
     // ------------------------------------------------------------------------
     // --- Public methods -----------------------------------------------------
     // ------------------------------------------------------------------------
@@ -131,7 +137,7 @@ class NlptoolboxWrapper extends Erfurt_Wrapper
         return false;
     }
     
-    public function run($uri, $graphUri)
+    public function run($uri, $graphUri, $returnAll = false)
     {
         if ($uri === $this->_uri) {
             $response = array(
@@ -159,12 +165,14 @@ class NlptoolboxWrapper extends Erfurt_Wrapper
                     $objectTripleCount++;
                 }
                 
-                try {
-                    $store = Erfurt_App::getInstance()->getStore();
-                    $store->addMultipleStatements($graphUri, $objectTriples);
-                } catch (Exception $e) {
-                    // on error, report 0 triples added
-                    $objectTripleCount = 0;
+                if (!$returnAll) {
+                    try {
+                        $store = Erfurt_App::getInstance()->getStore();
+                        $store->addMultipleStatements($graphUri, $objectTriples);
+                    } catch (Exception $e) {
+                        // on error, report 0 triples added
+                        $objectTripleCount = 0;
+                    }
                 }
                 
                 $triples = array(
@@ -173,9 +181,17 @@ class NlptoolboxWrapper extends Erfurt_Wrapper
                     )
                 );
                 
-                $tripleCount = count($this->_entities);
+                $tripleCount = 2 * count($this->_entities);
                 
-                $response['add']          = $triples;
+                if ($returnAll) {
+                    $response['add'] = array_merge(
+                        $triples, 
+                        $objectTriples
+                    );
+                } else {
+                    $response['add'] = $triples;
+                }
+                
                 $response['status_codes'] = array(Erfurt_Wrapper::RESULT_HAS_ADD);
                 $response['added_count']  = $objectTripleCount;
                 $response['status_desc']  = sprintf('%d named entities were extracted', $tripleCount);
@@ -185,6 +201,11 @@ class NlptoolboxWrapper extends Erfurt_Wrapper
         }
         
         return false;
+    }
+    
+    public function setProperties($properties)
+    {
+        $this->_textProperties = (array) $properties;
     }
     
     // ------------------------------------------------------------------------
@@ -207,7 +228,9 @@ class NlptoolboxWrapper extends Erfurt_Wrapper
     
     protected function _getTextProperties()
     {
-        if (isset($this->_config->properties) && isset($this->_config->properties->fulltext)) {
+        if (is_array($this->_textProperties) && count($this->_textProperties)) {
+            return $this->_textProperties;
+        } else if (isset($this->_config->properties) && isset($this->_config->properties->fulltext)) {
             if ($this->_config->properties->fulltext instanceof Zend_Config) {
                 return $this->_config->properties->fulltext->toArray();
             } else {

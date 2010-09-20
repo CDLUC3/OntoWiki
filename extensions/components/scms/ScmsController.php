@@ -17,11 +17,9 @@
  */
 class ScmsController extends OntoWiki_Controller_Component
 {
-    const SCMS_DOCUMENT         = 'http://ns.aksw.org/scms/document';
-    const SCMS_ANNOTATE         = 'http://ns.aksw.org/scms/annotate';
-    const SCMS_CALLBACKENDPOINT = 'http://ns.aksw.org/scms/callbackEndpoint';
-    
+    protected $_endpoint = array();
     protected $_nodes = array();
+    protected $_queue = null;
     
     /**
      * Expects an annotation request described using the scms vocabulary.
@@ -55,25 +53,19 @@ class ScmsController extends OntoWiki_Controller_Component
         /*
          * Instantiate toolbox wrapper
          */
-        try {
-            $wrapperName = isset($this->_privateConfig->wrapper->name) ? $this->_privateConfig->wrapper->name : 'scms';
-            $scmsWrapper = Erfurt_Wrapper_Registry::getInstance()->getWrapperInstance($wrapperName);
-        } catch (Erfurt_Wrapper_Exception $e) {
+        if (!$this->_wrapper()) {
             throw new OntoWiki_Controller_Exception("SCMS wrapper not installed or not active.");
             exit;
         }
         
-        /*
-         * Reaching here, all preconditions are met
-         *
-         * TODO:
-         * 1. Store node
-         * 2. Set annotation properties in wrapper
-         * 3. Run wrapper
-         * 4. Construct response
-         * 5. Send Response to callback endpoint
-         */
+        try {
+            require_once 'ScmsTask.php';
+            $task = new ScsmTask($statement);
+        } catch (Exception $e) {
+            
+        }
         
+        array_push($this->_queue(), $task);
     }
     
     /**
@@ -81,45 +73,65 @@ class ScmsController extends OntoWiki_Controller_Component
      */
     public function runAction()
     {
-        
-    }
-    
-    // ------------------------------------------------------------------------
-    // --- Private methods ----------------------------------------------------
-    // ------------------------------------------------------------------------
-    
-    protected function _getRequestName($index)
-    {
-    }
-    
-    protected function _getCallbackUri($index)
-    {
-    }
-    
-    protected function _getNode($index)
-    {
-    }
-    
-    protected function _addNode($nodeStatements)
-    {
-        $keys = array_keys($nodeStatements);
-        if (count($keys) > 0) {
-            $nodeUri = $key[0];
+        foreach ($this->_queue() as $task) {
+            $wrapper = $this->_wrapper();
+            $wrapper->setProperties($task->annotateProperties());
+            $node    = $task->node;
+            $nodeUri = array_keys($node)[0];
             
-            if (!isset($this->_nodes[$nodeUri])) {
-                $this->_nodes[$nodeUri] = $nodeStatements[$nodeUri];
+            if ($wrapper->isHandled($nodeUri, $this->_graph())) {
+                $wrapperResult     = $wrapper->run($nodeUri, $this->_graph(), true);
+                $wrapperStatements = $wrapperResult['add'];
+                
+                require_once 'libraries/arc/ARC2.php';
+                $serializer     = ARC2::getTurtleSerializer();
+                $turtleResponse = $serializer->getSerializedIndex($wrapperStatements);
+                
+                $client = new Zend_Http_Client();
+                $client->setUri($task->callbackEndpoint)
+                       ->setPost(Zend_Http_Client::POST)
+                       ->setPrameterPost(
+                           $this->_privateConfig->parameter->name => $turtleResponse
+                       );
+                $client->request();
             }
         }
     }
     
-    protected function _analyzeStatements($index)
+    // ------------------------------------------------------------------------
+    // --- Protected methods --------------------------------------------------
+    // ------------------------------------------------------------------------
+    
+    protected function _graph()
     {
-        foreach ($index as $requestUri => $requestData) {
-            if (isset($requestData[SCMS_DOCUMENT])) {
-                foreach ($requestData[SCMS_DOCUMENT] as $document) {
-                    $this->_addNode($document);
-                }
-            }
+        if (isset($this->_privateConfig->graph->uri)) {
+            return $this->_privateConfig->graph->uri;
         }
+        
+        return OntoWiki::getInstance()->selectedModel;
+    }
+    
+    protected function _queue()
+    {
+        if (null === $this->_queue) {
+            if (!isset(OntoWiki::getInstance()->session->scmsTasks)) {
+                OntoWiki::getInstance()->session->scmsTasks = array();
+            }
+            $this->_queue = OntoWiki::getInstance()->session->scmsTasks;
+        }
+        
+        return $this->_queue;
+    }
+    
+    protected function _wrapper()
+    {
+        try {
+            $wrapperName = isset($this->_privateConfig->wrapper->name) ? $this->_privateConfig->wrapper->name : 'scms';
+            $scmsWrapper = Erfurt_Wrapper_Registry::getInstance()->getWrapperInstance($wrapperName);
+        } catch (Erfurt_Wrapper_Exception $e) {
+            return null;
+        }
+        
+        return $wrapperName;
     }
 }
