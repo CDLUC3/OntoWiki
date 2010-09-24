@@ -30,7 +30,7 @@ class ScmsTask
     public static function initWithRequestIndex($index)
     {
         $result = $this->_analyzeStatements($index);
-        $task = new self(
+        $task   = new self(
             $result->name, 
             $result->node, 
             $result->callbackEndpoint, 

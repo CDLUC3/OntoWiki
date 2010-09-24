@@ -17,10 +17,6 @@
  */
 class ScmsController extends OntoWiki_Controller_Component
 {
-    protected $_endpoint = array();
-    protected $_nodes = array();
-    protected $_queue = null;
-    
     /**
      * Expects an annotation request described using the scms vocabulary.
      * It stores the node and creates an scms task which is then added to 
@@ -62,7 +58,7 @@ class ScmsController extends OntoWiki_Controller_Component
             require_once 'ScmsTask.php';
             $task = new ScsmTask($statement);
         } catch (Exception $e) {
-            
+            // TODO: throw exception?
         }
         
         array_push($this->_queue(), $task);
