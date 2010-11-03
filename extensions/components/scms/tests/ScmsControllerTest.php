@@ -21,13 +21,13 @@ class ScmsControllerTest extends Zend_Test_PHPUnit_ControllerTestCase
     {
         // $this->setExpectedException('OntoWiki_Controller_Exception');
         $this->request->setMethod('post');
-        $this->dispatch('/');
+        $this->dispatch('/scms/request');
         
         $r = $this->getResponse();
         var_dump($r->getBody());
         
-        $this->assertController('index');
-        $this->assertAction('news');
+        $this->assertController('scms');
+        $this->assertAction('request');
     }
 }
 
