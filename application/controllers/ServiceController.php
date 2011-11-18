@@ -1,12 +1,4 @@
 <?php
-/**
- * This file is part of the {@link http://ontowiki.net OntoWiki} project.
- *
- * @copyright Copyright (c) 2011, {@link http://aksw.org AKSW}
- * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
- */
-
-
 /*
  * This File is edited by UDFR for different requirement
  */
@@ -317,11 +309,8 @@ class ServiceController extends Zend_Controller_Action
                     in_array(EF_OWL_CLASS, $typeArray)  ||
                     $hasInstances
                 ) {
+                    // add a seperator
 
-<<<<<<< HEAD
-					// add a seperator
-=======
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
                     $menu->prependEntry(OntoWiki_Menu::SEPARATOR);
 
                     $url = new OntoWiki_Url(
@@ -1143,7 +1132,7 @@ class ServiceController extends Zend_Controller_Action
         // empty object to hold data
         $output        = new stdClass();
         $newProperties = new stdClass();
-<<<<<<< HEAD
+
         $properties = $properties['results']['bindings'];
         
        	/*echo "abhishek-----<pre>";
@@ -1171,14 +1160,12 @@ class ServiceController extends Zend_Controller_Action
     		$properties = array_merge((array)$properties, (array)$properties2);	
     	}
         
-=======
-
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
         // feed title helper w/ URIs
         $titleHelper = new OntoWiki_Model_TitleHelper($model);
         $titleHelper->addResources($properties, 'uri');
 
         if (!empty($properties)) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         	// Abhi - UDFR - Adding properties by default (rdf:ype and rdfs:label)
@@ -1209,6 +1196,17 @@ class ServiceController extends Zend_Controller_Action
                 if ($currentType == 'literal' || $currentType == 'typed-literal') {                  
 =======
             
+>>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
+=======
+            foreach ($properties as $property) {
+
+                $currentUri   = $property['uri']['value'];
+                $currentValue = $property['value']['value'];
+                $currentType  = $property['value']['type'];
+
+                $value = new stdClass();
+
+                if ($currentType == 'literal' || $currentType == 'typed-literal') {
 >>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
                     if (isset($property['value']['datatype'])) {
                         $value->datatype = $property['value']['datatype'];
@@ -1246,6 +1244,7 @@ class ServiceController extends Zend_Controller_Action
                             break;
                     }
 <<<<<<< HEAD
+<<<<<<< HEAD
                     //$value->type   = $currentType;
                     #$value->hidden = true;
                     
@@ -1255,6 +1254,15 @@ class ServiceController extends Zend_Controller_Action
                 		$value->value = $currentValue;
 =======
 
+>>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
+=======
+
+                    $value->type   = $currentType;
+                    #$value->hidden = true;
+
+                } else { // $currentUri != EF_RDF_TYPE
+                    if ( ($workingMode == 'clone') || ($workingMode == 'edit') ) {
+                        $value->value = $currentValue;
 >>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
                         $value->type  = $currentType;
                     } } 
@@ -1304,6 +1312,7 @@ class ServiceController extends Zend_Controller_Action
         exit;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
  
     //UDFR - key delete function
 	protected function reindex(array $source, $blacklist = array())
@@ -1330,6 +1339,9 @@ class ServiceController extends Zend_Controller_Action
 	    return $source;
 	}
 	
+=======
+
+>>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
 =======
 
 >>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
