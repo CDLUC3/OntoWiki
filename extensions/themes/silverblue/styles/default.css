@@ -65,7 +65,8 @@
 body {
     font-family: sans-serif;
     line-height: 1.5;
-    background: url(./../images/layout-background-body.png) fixed no-repeat 97% 96% #eff9ff;
+    background: url(./../images/udfr_bg.gif) fixed no-repeat 97% 96% #eff9ff;
+    background-size:98px 150px;
     font-size:16px; /* same font-size for all browsers */
 }
 
@@ -711,7 +712,7 @@ ul.inline.separated li, ol.inline.separated li
 }
 ul.inline.separated li:after, ol.inline.separated li:after
 {
-    content:" • ";
+    content:" â€¢ ";
     color:#ccc;
 }
 ul.inline.separated li:last-child:after, ol.inline.separated li:last-child:after,

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OntoWiki module – modellist
+ * OntoWiki module â€“ modellist
  *
  * Shows a list of all models in a store
  *
@@ -124,7 +124,7 @@ class ModellistModule extends OntoWiki_Module
     }
 
     public function getTitle() {
-        return "Knowledge Bases";
+        return "Select Source"; // UDFR - Labe changed from Knowledge Bases... Requirement
     }
 
 }

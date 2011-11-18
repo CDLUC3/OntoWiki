@@ -1,5 +1,7 @@
 <?php
-
+/*
+ * This File is edited by UDFR for different requirement
+ */
 /**
  * OntoWiki service controller.
  * 
@@ -206,7 +208,7 @@ class ServiceController extends Zend_Controller_Action
                         array('controller' => 'model', 'action' => 'delete'),
                         array()
                     );
-                    $url->setParam('model',$resource,false);
+                    $url->setParam('m',$resource,false);
 
                     $menu->prependEntry(
                         'Delete Knowledge Base',
@@ -290,17 +292,17 @@ class ServiceController extends Zend_Controller_Action
                 } else {
                     $hasInstances = false;
                 }
-
+				//var_dump($results[0]);
+				//var_dump($hasInstances);
                 $typeArray = array();
                 foreach ($results[0] as $row) {
                     $typeArray[] = $row['type'];
                 }
-
+				//var_dump($typeArray); exit;
                 if (in_array(EF_RDFS_CLASS, $typeArray) ||
                     in_array(EF_OWL_CLASS, $typeArray)  ||
                     $hasInstances
                 ) {
-                    
                     // add a seperator
                     $menu->prependEntry(OntoWiki_Menu::SEPARATOR);
 
@@ -310,9 +312,19 @@ class ServiceController extends Zend_Controller_Action
                     );
                     $url->setParam('class',$resource,false);
                     $url->setParam('init',"true",true);
-
+					
+                    // UDFR - Abhi - Search for last '#' in resource string
+                    if (strrchr($resource, "#")){
+                    	$search = strrchr($resource, "#");
+                    	$trim = substr($search, 1, 8);	
+                    }
+                    else {
+                    	$search = strrchr($resource, "/");
+                    	$trim = substr($search, 1, 8);	
+                    }
+					
                     // add class menu entries
-                    if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
+                    if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) && $trim != 'Abstract') {  // Don't allow create instance for Abstract classes
                         $menu->prependEntry(
                             'Create Instance',
                             "javascript:createInstanceFromClassURI('$resource');"
@@ -988,11 +1000,13 @@ class ServiceController extends Zend_Controller_Action
         $store    = OntoWiki::getInstance()->erfurt->getStore();
         $response = $this->getResponse();
         $model    = $this->_owApp->selectedModel;
-
+		$modelIri = $model->getModelIri();
+		
+		
         if (isset($this->_request->m)) {
             $model = $store->getModel($this->_request->m);
         }
-        if (empty($model)) {
+        if (empty($model)) { 
             throw new OntoWiki_Exception('Missing parameter m (model) and no selected model in session!');
             exit;
         }
@@ -1017,47 +1031,152 @@ class ServiceController extends Zend_Controller_Action
         }
 
         if ($workingMode == 'class') {
-            $properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
+        	//UDFR - Abhi
+        	if ($modelIri != "http://localhost/OntoWiki/Config/") {
+            	$properties = $model->sparqlQuery('
+            	select distinct ?uri
+				where
+				{
+				{?uri <'.EF_RDFS_DOMAIN.'> <'.$parameter.'>.}
+				union
+				{?uri <'.EF_RDFS_DOMAIN.'> ?super.
+				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.}
+				union
+				{?uri <'.EF_RDFS_DOMAIN.'> ?s2.
+				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.
+				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.}
+				union
+				{?uri <'.EF_RDFS_DOMAIN.'> ?s3.
+				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
+				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.
+				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
+				union
+				{?uri <'.EF_RDFS_DOMAIN.'> ?s4.
+				?s3 <'.EF_RDFS_SUBCLASSOF.'> ?s4.
+				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
+				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.
+				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
+				?uri <'.EF_RDF_TYPE.'> ?propType.
+				
+				OPTIONAL{ ?uri <'.EF_RDFS_RANGE.'>  ?rangeclass.}  
+				}
+				LIMIT 200' , array('result_format' => 'extended'));
+            	//OPTIONAL { ?value <'.EF_RDF_TYPE.'> ?rangeclass.}
+        	}
+        	else {
+        		$properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
                 ?s ?uri ?value.
                 ?s a <'.$parameter.'>.
                 } LIMIT 20 ', array('result_format' => 'extended'));
+        	}	
+            
+                        
         } elseif ($workingMode == 'clone') {
             # BUG: more than one values of a property are not supported right now
             # BUG: Literals are not supported right now
             $properties = $model->sparqlQuery('SELECT ?uri ?value {
                 <'.$parameter.'> ?uri ?value.
                 #FILTER (isUri(?value))
-                } LIMIT 20 ', array('result_format' => 'extended'));
+                } LIMIT 200 ', array('result_format' => 'extended'));
+        
         } elseif ($workingMode == 'edit') {
-            $properties = $model->sparqlQuery('SELECT ?uri ?value {
-                <'.$parameter.'> ?uri ?value.
-                } LIMIT 20 ', array('result_format' => 'extended'));
-        } else { // resource
+        $properties = $model->sparqlQuery('SELECT ?uri ?value WHERE {
+                	<'.$parameter.'> ?uri ?value.
+                	} LIMIT 200 ', array('result_format' => 'extended'));
+        	if ($modelIri != "http://localhost/OntoWiki/Config/") {
+        		$properties2 = $model->sparqlQuery('select distinct ?uri
+				where
+				{<'.$parameter.'> <'.EF_RDF_TYPE.'> ?class.
+				{?uri <'.EF_RDFS_DOMAIN.'> ?class.}
+				UNION
+				{?uri <'.EF_RDFS_DOMAIN.'> ?super.
+				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.}
+				UNION
+				{?uri <'.EF_RDFS_DOMAIN.'> ?s2.
+				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.
+				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.}
+				UNION
+				{?uri <'.EF_RDFS_DOMAIN.'> ?s3.
+				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
+				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.
+				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
+				UNION
+				{?uri <'.EF_RDFS_DOMAIN.'> ?s4.
+				?s3 <'.EF_RDFS_SUBCLASSOF.'> ?s4.
+				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
+				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.
+				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
+				?uri <'.EF_RDF_TYPE.'> ?propType.
+				OPTIONAL{ ?uri <'.EF_RDFS_RANGE.'>  ?rangeclass.}  
+				}
+				LIMIT 200', array('result_format' => 'extended'));
+        	}
+      	} else { // resource
             $properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
                 <'.$parameter.'> ?uri ?value.
-                } LIMIT 20 ', array('result_format' => 'extended'));
+                } LIMIT 200 ', array('result_format' => 'extended'));
         }
         
         // empty object to hold data
         $output        = new stdClass();
         $newProperties = new stdClass();
-        
         $properties = $properties['results']['bindings'];
+        
+       	/*echo "abhishek-----<pre>";
+            	var_dump($properties2['results']['bindings']); echo '<br>';
+            	//var_dump($properties2); echo '<br>';
+        echo "</pre>";
+        exit;*/
+        //UDFR - Abhi - create an array which has no repeat properties
+        if (isset($properties2)) {
+       		$properties2 = $properties2['results']['bindings'];
+       		$i = 0;
+       		foreach($properties as $key){
+            	$aa = $key['uri']['value'];
+            	foreach($properties2 as $key2){
+            		if ($aa == $key2['uri']['value']){
+            			$array3[$i] =  $key2;
+            			$i=$i+1;
+					}
+            	}
+    		}
+    		if (isset ($array3)) {
+    			$properties2 = $this->reindex($properties2, $array3);
+    		}
+    		$properties = array_merge((array)$properties, (array)$properties2);	
+    	}
         
         // feed title helper w/ URIs
         $titleHelper = new OntoWiki_Model_TitleHelper($model);
         $titleHelper->addResources($properties, 'uri');
         
         if (!empty($properties)) {
-            foreach ($properties as $property) {
+        	// Abhi - UDFR - Adding properties by default (rdf:ype and rdfs:label)
+        	if ($modelIri != "http://localhost/OntoWiki/Config/" && $workingMode == 'class') {
+        	 	$value = new stdClass();
+                $value->value = $parameter;
+                $value->type = 'uri';
+                $value->hidden = true;
+                $uri = EF_RDF_TYPE;
+                $newProperties->$uri = array($value);
+            	$value = new stdClass();
+            	$value->type = 'literal';
+            	$value->title = 'label';
+            	$uri = EF_RDFS_LABEL;
+            	$newProperties->$uri = array($value);
+        	}               
+        	// Abhi end
+            
+        	foreach ($properties as $property) {
                 
+            	$value = new stdClass();
                 $currentUri   = $property['uri']['value'];
-                $currentValue = $property['value']['value'];
-                $currentType  = $property['value']['type'];
-
-                $value = new stdClass();
-                
-                if ($currentType == 'literal' || $currentType == 'typed-literal') {                    
+                          	
+                if(array_key_exists('value', $property)) {
+                	$currentValue = $property['value']['value'];
+                	$currentType  = $property['value']['type'];	
+                	        
+                if ($currentType == 'literal' || $currentType == 'typed-literal') {                  
                     if (isset($property['value']['datatype'])) {
                         $value->datatype = $property['value']['datatype'];
                     } else if (isset($property['value']['xml:lang'])) {
@@ -1070,45 +1189,53 @@ class ServiceController extends Zend_Controller_Action
                     }
                     */
                 }
+                }
 
                 // return title from titleHelper
                 $value->title = $titleHelper->getTitle($currentUri);
                 
-                if ($currentUri == EF_RDF_TYPE) {
+                if ($currentUri == EF_RDF_TYPE) { 
+                	//echo "I am in currentUri == EF_RDF_TYPE <br/>\n";
                     switch ($workingMode) {
                         case 'resource':
                             /* fallthrough */
                         case 'clone':
                             $value->value  = $currentValue;
+                            $value->type   = $currentType;
                             break;
                         case 'edit':
                             $value->value  = $currentValue;
+                            $value->type   = $currentType;
+                            $value->hidden = true;
                             break;
                         case 'class':
                             $value->value  = $parameter;
                             break;
                     }
                     
-                    $value->type   = $currentType;
+                    //$value->type   = $currentType;
                     #$value->hidden = true;
                     
-                } else { // $currentUri != EF_RDF_TYPE
-                    if ( ($workingMode == 'clone') || ($workingMode == 'edit') ) {
-                        $value->value = $currentValue;
+                } else { // $currentUri != EF_RDF_TYPE 
+                	if ( ($workingMode == 'clone') || ($workingMode == 'edit') ) {
+                	if(array_key_exists('value', $property )) {
+                		$value->value = $currentValue;
                         $value->type  = $currentType;
-                    }
+                    } } 
                 }
-
+				 
                 // deal with multiple values of a property
                 if (isset($newProperties->$currentUri)) {
-                    $tempProperty = $newProperties->$currentUri;
+                	$tempProperty = $newProperties->$currentUri;
                     $tempProperty[] = $value;
                     $newProperties->$currentUri = $tempProperty;
                 } else {
-                    $newProperties->$currentUri = array($value);
+                    $newProperties->$currentUri = array($value);                                       
                 }
-            } // foreach
+            } // foreach 
+            
             $output->$resourceUri = $newProperties;
+            
         } else {
             // empty sparql results -> start with a plain resource
             if ($workingMode == 'class') {
@@ -1127,9 +1254,13 @@ class ServiceController extends Zend_Controller_Action
             $uri = EF_RDFS_LABEL;
             $newProperties->$uri = array($value);
             
+            
             $output->$resourceUri = $newProperties;
         }
-
+        /*echo "abhishek-----<pre>";
+            	var_dump($newProperties);
+        echo "</pre>";
+		 exit;*/
         // send the response
         $response->setHeader('Content-Type', 'application/json');
         $response->setBody(json_encode($output));
@@ -1137,6 +1268,31 @@ class ServiceController extends Zend_Controller_Action
         exit;
     }
     
+    //UDFR - key delete function
+	protected function reindex(array $source, $blacklist = array())
+	{
+	    $j = 0;
+	    foreach ($source as $key => $val) {
+        	if ($key != $j) {
+	            unset($source[$key]);
+            	$source[$j] = $val;
+        	}
+	        
+        	$j++;
+    	}
+	    
+	    foreach ($source as $key => $val) {
+        	foreach ($blacklist as $var) {
+            	if ($val === $var) {
+	                unset($source[$key]);    
+                	$source = $this->reindex($source, $blacklist);
+            	}
+        	}
+    	}
+	    
+	    return $source;
+	}
+	
     protected function _findStatementsForObjectsWithHashes($graphUri, $indexWithHashedObjects, $hashFunc = 'md5')
     {
         $queryOptions = array(

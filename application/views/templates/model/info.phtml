@@ -14,23 +14,23 @@
 <table class="separated-vertical">
     <tr class="odd">
         <td width="25%">Classes</td>
-        <td>23 (Defined: 23, Imported: 0)</td>
+        <td>23Â (Defined: 23,Â Imported: 0)</td>
     </tr>
     <tr>
         <td width="25%">Datatype Properties</td>
-        <td>23 (Defined: 23, Imported: 0)</td>
+        <td>23Â (Defined: 23,Â Imported: 0)</td>
     </tr>
     <tr class="odd">
         <td width="25%">Object Properties</td>
-        <td>23 (Defined: 23, Imported: 0)</td>
+        <td>23Â (Defined: 23,Â Imported: 0)</td>
     </tr>
     <tr>
         <td width="25%">Annotation Properties</td>
-        <td>23 (Defined: 23, Imported: 0)</td>
+        <td>23Â (Defined: 23,Â Imported: 0)</td>
     </tr>
     <tr class="odd">
         <td width="25%">Individuals</td>
-        <td>23 (Defined: 23, Imported: 0)</td>
+        <td>23Â (Defined: 23,Â Imported: 0)</td>
     </tr>
 </table-->
 
@@ -114,9 +114,21 @@ if($this->has('showFoafLink') && $this->showFoafLink){
 
 <div id="location_bar_container" style="display: none; padding: 10px 0px 10px 20px; border-top: 1px dotted #ababab;">
   <h5><?php echo $this->_('Jump to resource') ?></h5>
-  <input id="location_bar_input" class="text width75" type="text" value="" name="l" />
+  <input onclick="clearText(this.value)" id="location_bar_input" class="text width75" value ="Enter resource URI" type="text" name="l" />
   <a id="location_open" class="minibutton" style="float: none"> <?php echo $this->_('View Resource') ?> </a>
 </div>
 
 
 </div>
+
+<!-- UDFR - Abhi input box title handling -->
+<script type="text/javascript">
+
+function clearText(a){
+	var a;
+	if(a == "Enter resource URI")
+	{
+	document.getElementById("location_bar_input").value="";
+	}
+}
+</script>

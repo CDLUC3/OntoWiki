@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OntoWiki module – application
+ * OntoWiki module â€“ application
  *
  * Provides the OntoWiki application menu and a search field
  *
@@ -97,16 +97,20 @@ class ApplicationModule extends OntoWiki_Module
      */
     public function getContents()
     {
+    	$this->view->url  = $this->_config->staticUrlBase; // for small logo of udfr
         $data = array(
             'actionUrl'        => $this->_config->urlBase . 'application/search/',
             'modelSelected'    => isset($this->_owApp->selectedModel), 
             'searchtextinput' => $this->_request->getParam('searchtext-input')
         );
         
-        if (null !== ($logo = $this->_owApp->erfurt->getStore()->getLogoUri())) {
+        /* UDFR - Abhi 
+         * Hide Virtuoso logo 
+         * if (null !== ($logo = $this->_owApp->erfurt->getStore()->getLogoUri())) {
             $data['logo']     = $logo;
             $data['logo_alt'] = 'Store Logo';
-        }
+        }*/
+        
         if ($this->_owApp->selectedModel) {
             $data['showSearch'] = true;
         } else {

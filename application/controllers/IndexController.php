@@ -105,6 +105,13 @@ class IndexController extends OntoWiki_Controller_Base
         OntoWiki_Navigation::disableNavigation();
     }
     
+    public function udfrAction()
+    {
+    	$this->view->url           = $this->_config->staticUrlBase;
+    	$this->view->placeholder('main.window.title')->set('Welcome to the Unified Digital Format Registry (UDFR)');
+        OntoWiki_Navigation::disableNavigation();
+    }
+    
     /**
      * Default action if called action wasn't found
      */

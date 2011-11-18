@@ -27,11 +27,43 @@ class ResourceController extends OntoWiki_Controller_Base {
         $response = $this->getResponse();
         $response->setHeader('Last-Modified', date('r', $lastModArray['tstamp']), true);
     }
+    
+    // Check setup for table exist or not if no create it
+	private function _checkSetup() {
+        $this->_initialize();
+    } 
+
+    private function _initialize()
+    {
+    	
+            $getstore = Erfurt_App::getInstance()->getStore();
+        
+        if (!$getstore->isSqlSupported()) {
+            throw new Exception('For create table store adapter needs to implement the SQL interface.');
+        }
+        
+        $existingTableNames = $getstore->listTables();
+		//var_dump($existingTableNames); exit();
+        if (!in_array('ef_reviews', $existingTableNames)) {
+            $columnSpec = array(
+                'id'          => 'INT PRIMARY KEY AUTO_INCREMENT',
+                'model'       => 'VARCHAR(255) NOT NULL',
+                's'     => 'VARCHAR(255) NOT NULL',
+                'p'    => 'VARCHAR(255) NOT NULL',
+                'o'      => 'VARCHAR(255) NOT NULL',
+                'review_flag' => 'INT NOT NULL'
+                );
+            
+            $getstore->createTable('ef_reviews', $columnSpec);
+        }
+    }
 
     /**
      * Displays all preoperties and values for a resource, denoted by parameter
      */
     public function propertiesAction() {
+    	
+    	$this->_checkSetup();
         $this->_addLastModifiedHeader();
 
         $store      = $this->_owApp->erfurt->getStore();
@@ -140,6 +172,9 @@ class ResourceController extends OntoWiki_Controller_Base {
             // prepare namespaces
             $namespaces = $graph->getNamespaces();
             $graphBase  = $graph->getBaseUri();
+            // Abhi - Review image validators
+	    	$this->view->store         = $store;
+	    	$this->view->url           = $this->_config->staticUrlBase;
             if (!array_key_exists($graphBase, $namespaces)) {
                 $namespaces = array_merge($namespaces, array($graphBase => OntoWiki_Utils::DEFAULT_BASE));
             }
@@ -147,7 +182,28 @@ class ResourceController extends OntoWiki_Controller_Base {
         }
 
         $toolbar = $this->_owApp->toolbar;
-
+        
+        /*UDFR- Abhi- Add 'Save Review' button if Reviewer Action is granted */
+		if ($this->_erfurt->getAc()->isActionAllowed('Reviewer')) {
+            $this->view->review = true;
+            // adding submit button for review-action
+	    	$toolbar->appendButton(
+			OntoWiki_Toolbar::SUBMIT, 
+			array('name' => 'Save Review', 'id' => 'resource-review')
+			);
+		}
+		else {
+            $this->view->review = false;
+        }
+        
+		//UDFR- Abhi- view variables for review action
+		$reviewurl = $this->_config->urlBase . 'resource/review';
+        $this->view->placeholder('main.window.title')->set($windowTitle);
+        $this->view->formActionUrl = (string) $reviewurl;
+        $this->view->formMethod    = 'post';
+        $this->view->formName      = 'resource-review';
+        $this->view->formEncoding  = 'multipart/form-data';
+			
         // show only if not forwarded and if model is writeable
         // TODO: why is isEditable not false here?
         if ($this->_request->getParam('action') == 'properties' && $graph->isEditable() &&
@@ -155,7 +211,8 @@ class ResourceController extends OntoWiki_Controller_Base {
         ) {
             // TODO: check acl
             $toolbar->appendButton(OntoWiki_Toolbar::EDIT, array('name' => 'Edit Properties'));
-            $toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
+            
+        	$toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
                 'name'  => 'Clone Resource',
                 'class' => 'clone-resource'
             ));
@@ -167,8 +224,9 @@ class ResourceController extends OntoWiki_Controller_Base {
             $toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
                     ->appendButton(OntoWiki_Toolbar::DELETE, $params);
 
-            $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
-                    ->prependButton(OntoWiki_Toolbar::ADD, array('name' => 'Add Property', '+class' => 'hidden edit property-add'));
+            //UDFR - Abhi - to activate Inline Add Property functionality uncomment lines below
+            //$toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
+              //      ->prependButton(OntoWiki_Toolbar::ADD, array('name' => 'Add Property', '+class' => 'hidden edit property-add'));
 
             $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
                     ->prependButton(OntoWiki_Toolbar::CANCEL, array('+class' => 'hidden'))
@@ -194,6 +252,98 @@ class ResourceController extends OntoWiki_Controller_Base {
 
     }
 
+    /**
+     * UDFR- Abhi - Stores reviewed properties in to ef_reviews table
+     * 	            Stores review actions in to ef_versioning_action table
+     */
+    public function reviewAction() {
+		$flag=1;
+		$resource   = $this->_owApp->selectedResource;
+		$redirectUrl = $this->_config->urlBase . 'resource/properties/?r=' . urlencode($resource);
+		$redirect  = $this->_request->getParam('redirect', $redirectUrl);
+		$store      = $this->_owApp->erfurt->getStore();
+    	$graph      = $this->_owApp->selectedModel;
+		$modelIri = $graph->getModelIri();
+		$baseIri  = $graph->getBaseIri();
+		//$resource   = $this->_owApp->selectedResource;
+		$resourceUri   = (string)$resource;
+		$model = new OntoWiki_Model_Resource($store, $graph, (string)$resource);
+        $values = $model->getValues();
+		$predicates = $model->getPredicates();
+		//var_dump($resource); echo '<br>'; echo '<br>';
+		//var_dump($predicates); echo '<br>';echo '<br>'; var_dump($values); exit;
+        // get versioning
+        $versioning = $this->_erfurt->getVersioning();
+	
+	
+	
+      	if($_POST['property_review']){
+
+		foreach($_POST['property_review'] as $val) {
+
+	    //$sql = 'UPDATE ef_stmt SET review_flag = 1 WHERE s = \'' . addslashes($resourceUri) . '\' AND p = \'' . addslashes($val) . '\'';
+	    //var_dump($modelIri); exit;
+	    //$store->sqlQuery($sql);
+
+	    foreach ($predicates as $graph => $predicatesForGraph) { 
+
+	    	foreach ($predicatesForGraph as $uri => $predicate) {
+		    	$currentPredicate = $predicates[$graph][$uri];  
+		    	
+		    	foreach ($values[$graph][$uri] as $entry) {
+					if ($currentPredicate['uri']===$val) {
+				    				    
+	    			    $event = new Erfurt_Event('onReviewStatement');
+			            $event->graphUri   = $modelIri;
+			            if ($entry['uri']===NULL) {
+				      		$actionsSql = 'INSERT INTO ef_reviews (model, s, p, o, review_flag) VALUES (\''. addslashes($modelIri) . '\', \'' . addslashes($resourceUri) . '\', \'' . addslashes($val) . '\', \'' 
+						   . $entry['object'] . '\', ' . (int)$flag .  ')' ;
+				       //var_dump($actionsSql); exit;
+	    			      $store->sqlQuery($actionsSql);
+							$event->statement = array(
+									'subject'   => $resourceUri,
+					            	'predicate' => $val,
+					            	'object'    => array('value'    => $entry['object'], 'type'     => 'literal', 'lang'=> 'en')
+					         		);
+				    	}
+				    	else {
+							$actionsSql = 'INSERT INTO ef_reviews (model, s, p, o, review_flag) VALUES (\''. addslashes($modelIri) . '\', \'' .addslashes($resourceUri) . '\', \'' . addslashes($val) . '\', \'' 
+						     . $entry['uri'] . '\', ' . (int)$flag .  ')' ;
+							//var_dump($actionsSql); exit;
+	    			        $store->sqlQuery($actionsSql);
+					  		$event->statement = array(
+									'subject'   => $resourceUri,
+					            	'predicate' => $val,
+					            	'object'    => array('value'    => $entry['uri'], 'type'     => 'uri')
+					         		);
+				    	}
+			            $event->trigger();//*/ var_dump ($entry); echo '<br>';
+					}
+		    	}
+	        }
+    	}
+	    $countReview++;
+		} 
+
+	$message = $countReview
+                    . ' Statement'. ($countReview != 1 ? 's': '')
+                    . ($countReview ? ' successfully' : '')
+                    . ' reviewed.';
+
+    $this->_owApp->appendMessage(
+                    new OntoWiki_Message($message, OntoWiki_Message::SUCCESS));
+
+	$this->_redirect($redirect, array('code' => 302));
+      }
+      else { 
+		$message = 'No statement was selected. Please select statement(s) for review';
+
+        	$this->_owApp->appendMessage(
+                    new OntoWiki_Message($message, OntoWiki_Message::ERROR));
+		$this->_redirect($redirect, array('code' => 302));
+      }
+    }  
+    
     /**
      * Displays resources of a certain type and property values that have
      * been selected by the user.
@@ -224,7 +374,6 @@ class ResourceController extends OntoWiki_Controller_Base {
         //begin view building
         $this->view->placeholder('main.window.title')->set('Resource List');
 
-        // rdfauthor on a list is not possible yet
         // TODO: check acl
         // build toolbar
         /*

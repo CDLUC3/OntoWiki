@@ -1,7 +1,7 @@
 <?php
 
 /**
- * OntoWiki module – login
+ * OntoWiki module â€“ login
  *
  * Provides the OntoWiki application menu and a search field
  *
@@ -63,9 +63,9 @@ class LoginModule extends OntoWiki_Module
         }
 
         $content = array(
-            'Local' => $this->render('templates/local', $data),
-            'OpenID' => $this->render('templates/openid', $data),
-            'FOAFSSL' => $this->render('templates/webid', $data)
+            'Local' => $this->render('templates/local', $data)
+            //'OpenID' => $this->render('templates/openid', $data)
+            //'FOAFSSL' => $this->render('templates/webid', $data)
         );
 
         return $content;

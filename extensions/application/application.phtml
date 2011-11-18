@@ -21,9 +21,12 @@
 			<input class="checkbox" type="checkbox" name="allModels" id="allModels" <?php echo $selected ?>/>
 			<?php echo $this->_('Search all Knowledge Bases') ?>
 		</label-->
-		<?php if ($this->has('logo')): ?>
-		    <img src="<?php echo $this->logo ?>" style="float:right;vertical-align:bottom" alt="<?php echo $this->logo_alt ?>" />
-		<?php endif; ?>
+		<!-- UDFR- Abhi Hide Virtuoso logo and place udfr logo 
+		<?php //if ($this->has('logo')): ?>
+		    <img src="<?php //echo $this->logo ?>" style="float:right;vertical-align:bottom" alt="<?php //echo $this->logo_alt ?>" />
+		<?php //endif; ?>
+		-->
+		<img width=15% height=15% src="<?php echo $this->url ?>extensions/themes/silverblue/images/udfr.gif" style="float:right;vertical-align:bottom" alt="UDFR" />
 		<!--a class="button submit"><?php echo $this->_('Submit') ?></a-->
 	</p>
 </form>

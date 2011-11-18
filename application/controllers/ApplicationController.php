@@ -59,21 +59,7 @@ class ApplicationController extends OntoWiki_Controller_Base
                 'Level'  => (bool)$this->_config->loglevel ? $this->_config->loglevel : 'disabled'
             )
         );
-        @exec("hg",$hg);
-        if(file_exists(".hg") && isset($hg[0]) &&$hg[0] == "Mercurial Distributed SCM"){ //check if the mercurial comand exists and ontowiki is a working directory
-            //echo exec("hg");
-            $cs_id = rtrim(exec("hg id -i"), "+");
-            //echo $revCmd;
-            exec("hg version", $version);
-            exec("hg log -r ".$cs_id, $log);
-
-            $data['Mercurial Versioning'] = array(
-              'Branch' => exec("hg branch"),
-              'Revision' => $log[0].", ".$log[3],
-              'Mercurial Version'  => $version[0]
-            );
-        }
-
+        
         $this->view->data = $data;
     }
      
@@ -186,6 +172,7 @@ class ApplicationController extends OntoWiki_Controller_Base
         $this->view->username      = '';
         $this->view->readonly      = '';
         $this->view->email         = '';
+        $this->view->url           = $this->_config->staticUrlBase;
 		
 		$toolbar = $this->_owApp->toolbar;
 		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
@@ -194,12 +181,13 @@ class ApplicationController extends OntoWiki_Controller_Base
         
         $post = $this->_request->getPost();
         
-        $this->_owApp->appendMessage(new OntoWiki_Message(
+        /* Not a requirement for UDFR
+			$this->_owApp->appendMessage(new OntoWiki_Message(
             'Already own an <span class="openid">OpenID?</span> <a href="' . $this->_config->urlBase . 'application/openidreg">Register here</a>', 
             OntoWiki_Message::INFO, 
             array('escape' => false, 'translate' => false)
             ));
-        
+        */
         if ($post) {
             $registeredUsernames      = array();
             $registeredEmailAddresses = array();
@@ -214,10 +202,12 @@ class ApplicationController extends OntoWiki_Controller_Base
                 }
             }
             
-            $email     = $post['email'];
-            $username  = $post['username'];
-            $password  = $post['password'];
-            $password2 = $post['password2'];
+            $email     	= $post['email'];
+            $username  	= $post['username'];
+            $password  	= $post['password'];
+            $password2 	= $post['password2'];
+            $string    	= strtoupper($_SESSION['string']);	// UDFR - Abhi - Captcha 
+	    	$userstring = strtoupper($post['userstring']);	// UDFR - Abhi - Captcha
             
             $emailValidator = new Zend_Validate_EmailAddress();
             
@@ -262,7 +252,11 @@ class ApplicationController extends OntoWiki_Controller_Base
                        !@preg_match($actionConfig['passregexp'], $password)) {
                 $message    = 'Password does not match regular expression set in system configuration';
                 $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
-                
+            
+            // UDFR - Abhi - Captcha validation
+            } else if ($string !== $userstring) {
+				$message    = 'Challenge String does not match';
+                $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));    
             } else {
                 // give default group?
                 if (isset($actionConfig['defaultGroup'])) {
