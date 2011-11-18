@@ -24,19 +24,27 @@ class LinkeddataPlugin extends OntoWiki_Plugin
         'application/xhtml+xml' => 'html', 
         'application/rdf+xml'   => 'rdf', 
         'text/n3'               => 'n3', 
+        'text/turtle'           => 'ttl',
         'application/json'      => 'json', 
         'application/xml'       => 'html'  // TODO: should this be xhtml or rdf?
     );
     
     /**
-     * Handles an arbitrary URI by checking if a resource exists in the store
-     * and forwarding to a redirecting to a URL that provides information
-     * about that resource in the requested mime type.
+     * This method is called, when the onIsDispatchable event was triggered.
      *
-     * @param string $uri the requested URI
-     * @param Zend_Controller_Request_Http
+     * The onIsDispatchable event is fired in an early stage of the OntoWiki
+     * request lifecycle. Hence it is not decided in that moment, which controller
+     * an action will be used.
      *
-     * @return boolean False if the request was not handled, i.e. no resource was found.
+     * The given Erfurt_Event object has an uri property, which contains the
+     * requested URI. The method then checks if a resource identified by that
+     * URI exists in the local store. Iff this is the case it sends a redirect
+     * to another URL depending on the requested MIME type.
+     *
+     * $event->uri contains the request URI.
+     *
+     * @param Erfurt_Event $event The event containing the required parameters.
+     * @return boolean false if the request was not handled, i.e. no resource was found.
      */
     public function onIsDispatchable($event)
     {
@@ -47,27 +55,48 @@ class LinkeddataPlugin extends OntoWiki_Plugin
         $uri = $event->uri;
       
         try {
-            // content negotiation
-            $flag  = false;
-            $type  = $this->_getTypeForRequest($request, $uri, $flag);
-            $graph = $this->_getFirstReadableGraphForUri($uri);
-            if (!$graph) {
+            // Check for a supported type by investigating the suffix of the URI or by
+            // checking the Accept header (content negotiation). The $matchingSuffixFlag
+            // parameter contains true if the suffix was used instead of the Accept header.
+            $matchingSuffixFlag = false;
+            $type = $this->_getTypeForRequest($request, $uri, $matchingSuffixFlag);
+
+            // We need a readable graph to query. We use the first graph that was found.
+            // If no readable graph is available for the current user, we cancel here.
+            list($graph, $matchedUri) = $this->_matchGraphAndUri($uri);
+
+            if (!$graph || !$matchedUri) {
+                // URI not found
                 return false;
             }
-         
-            $format = 'rdf';
-            if (isset($this->_privateConfig->format)) {
-                $format = $this->_privateConfig->format;
+
+            if ($uri !== $matchedUri) {
+                // Re-append faux file extension
+                if ($matchingSuffixFlag) {
+                    $matchedUri .= '.' . $type;
+                }
+                // Redirect to new (correct URI)
+                $response->setRedirect((string)$matchedUri, 301)
+                         ->sendResponse();
+                // FIXME: exit here prevents unit testing
+                exit;
             }
-            
-            $prov = (boolean)$this->_privateConfig->provenance->enabled;
-         
-            // redirect accordingly
+                                          
+            // Prepare for redirect according to the given type.
+            $url = null; // This will contain the URL to redirect to.
             switch ($type) {
                 case 'rdf':
                 case 'n3':
-                    $format = $type;
-                    // graph URIs export the whole graph
+                    // Check the config, whether provenance information should be included.  
+                    $prov = false;
+                    if (isset($this->_privateConfig->provenance) && 
+                            isset($this->_privateConfig->provenance->enabled)) {
+                            
+                        $prov = (boolean)$this->_privateConfig->provenance->enabled;
+                    }
+
+                    // Special case: If the graph URI is identical to the requested URI, we export 
+                    // the whole graph instead of only data regarding the resource.
                     if ($graph === $uri) {
                         $controllerName = 'model';
                         $actionName = 'export';
@@ -76,41 +105,51 @@ class LinkeddataPlugin extends OntoWiki_Plugin
                         $actionName = 'export';
                     }
                     
-                    // set export action
-                    $url = new OntoWiki_Url(array('controller' => $controllerName, 'action' => $actionName), array());
+                    // Create a URL with the export action on the resource or model controller.
+                    // Set the required parameters for this action.
+                    $url = new OntoWiki_Url(
+                        array('controller' => $controllerName, 'action' => $actionName), 
+                        array()
+                    );
                     $url->setParam('r', $uri, true)
-                        ->setParam('f', $format)
+                        ->setParam('f', $type)
                         ->setParam('m', $graph)
                         ->setParam('provenance', $prov);
                     break;
                 case 'html':
                 default:
-                    // default property view
-                    $url = new OntoWiki_Url(array('route' => 'properties'), array());
+                    // Defaults to the standard property view.
+                    // Set the required parameters for this action.
+                    $url = new OntoWiki_Url(
+                        array('route' => 'properties'), 
+                        array()
+                    );
                     $url->setParam('r', $uri, true)
                         ->setParam('m', $graph);
                     break;
             }
             
-            // make active graph (session required)
+            // Make $graph the active graph (session required) and make the resource
+            // in $uri the active resource.
             $activeModel = $store->getModel($graph);
             OntoWiki::getInstance()->selectedModel    = $activeModel;
             OntoWiki::getInstance()->selectedResource = new OntoWiki_Resource($uri, $activeModel);
-            
+
+            // Mark the request as dispatched, since we have all required information now.
             $request->setDispatched(true);
 
-            // give plugins a chance to do something
+            // Give plugins a chance to do something before redirecting.
             $event = new Erfurt_Event('onBeforeLinkedDataRedirect');
             $event->response = $response;
             $event->trigger();
             
-            // give plugins a chance to handle redirection self
+            // Give plugins a chance to handle the redirection instead of doing it here.
             $event = new Erfurt_Event('onShouldLinkedDataRedirect');
             $event->request  = $request;
             $event->response = $response;
             $event->type     = $type;
             $event->uri      = $uri;
-            $event->flag     = $flag;
+            $event->flag     = $matchingSuffixFlag;
             $event->setDefault(true);
             
             $shouldRedirect = $event->trigger();
@@ -128,70 +167,7 @@ class LinkeddataPlugin extends OntoWiki_Plugin
             return false;
         }
     }
-    
-    public function onRouteShutdown($event)
-    {
-        $owApp = OntoWiki::getInstance();
-        $requestUri = $owApp->config->urlBase . ltrim($event->request->getPathInfo(), '/');
-            
-        $viewPos = strrpos($requestUri, '/view/');
-        if ($viewPos !== false) {
-            $uri = substr($requestUri, 0, $viewPos) . '/id/' . substr($requestUri, $viewPos+6);
-                
-            $store = Erfurt_App::getInstance()->getStore();
-            $result = $store->getGraphsUsingResource($uri, false);
-                
-            if ($result) {                
-                // get source graph
-                $allowedGraph = null;
-                $ac = Erfurt_App::getInstance()->getAc();
-                foreach ($result as $g) {
-                    if ($ac->isModelAllowed('view', $g)) {
-                        $allowedGraph = $g;
-                        break;
-                    }
-                }
-                
-                $graph = null;
-                if ($allowedGraph !== null) {
-                    $graph = $store->getModel($allowedGraph);
-                    $owApp->selectedModel = $graph;
-                }
-                    
-                $resource = new OntoWiki_Resource($uri, $graph);
-                $owApp->selectedResource = $resource;
-            }
-        }
-        $dataPos = strrpos($requestUri, '/data/');
-        if ($dataPos !== false) {
-            $uri = substr($requestUri, 0, $dataPos) . '/id/' . substr($requestUri, $dataPos+6);
-                
-            $store = Erfurt_App::getInstance()->getStore();
-            $result = $store->getGraphsUsingResource($uri, false);
-                
-            if ($result) {                
-                // get source graph
-                $allowedGraph = null;
-                $ac = Erfurt_App::getInstance()->getAc();
-                foreach ($result as $g) {
-                    if ($ac->isModelAllowed('view', $g)) {
-                        $allowedGraph = $g;
-                        break;
-                    }
-                }
-                    
-                $graph = null;
-                if ($allowedGraph !== null) {
-                    $graph = $store->getModel($allowedGraph);
-                    $owApp->selectedModel = $graph;
-                }
-                    
-                $resource = new OntoWiki_Resource($uri, $graph);
-                $owApp->selectedResource = $resource;
-            }
-        }
-    }
-    
+
     public function onNeedsGraphForLinkedDataUri($event)
     {
         return $this->_getFirstReadableGraphForUri($event->uri);
@@ -221,10 +197,12 @@ class LinkeddataPlugin extends OntoWiki_Plugin
         }
         
         // content negotiation
-        $possibleTypes = array_filter(array_keys($this->_typeMapping));
+        $possibleTypes = array_keys($this->_typeMapping);
         if ($type = $this->_matchDocumentTypeRequest($request, $possibleTypes)) {
             return $this->_typeMapping[$type];
         }
+
+        return $this->_typeMapping['']; // default type
     }
     
     /**
@@ -239,6 +217,33 @@ class LinkeddataPlugin extends OntoWiki_Plugin
     {
         return OntoWiki_Utils::matchMimetypeFromRequest($request, $supportedTypes);
     }
+
+    private function _matchGraphAndUri($uri)
+    {
+        $graph = null;
+        $actualUri = null;
+        if ((bool)$this->_privateConfig->fuzzyMatch === true) {
+            $store = OntoWiki::getInstance()->erfurt->getStore();
+            // Remove trailing slashes
+            $uri = rtrim($uri, '/');
+            // Match case-insensitive and optionally with trailing slashes
+            $query = sprintf(
+                'SELECT DISTINCT ?uri WHERE {?uri ?p ?o . FILTER (regex(str(?uri), "^%s/*$", "i"))}', 
+                $uri);
+            $queryObj = Erfurt_Sparql_SimpleQuery::initWithString($query);
+            $result = $store->sparqlQuery($queryObj);
+            $first = current($result);
+            if (isset($first['uri'])) {
+                $actualUri = $first['uri'];
+            }
+        } else {
+            $actualUri = $uri;
+        }
+
+        $graph = $this->_getFirstReadableGraphForUri($actualUri);
+
+        return array($graph, $actualUri);
+    }
     
     private function _getFirstReadableGraphForUri($uri)
     {
@@ -246,7 +251,7 @@ class LinkeddataPlugin extends OntoWiki_Plugin
         try {
             $result = $store->getGraphsUsingResource($uri, false);
             
-            if ($result) {                
+            if ($result) {
                 // get source graph
                 $allowedGraph = null;
                 $ac = Erfurt_App::getInstance()->getAc();

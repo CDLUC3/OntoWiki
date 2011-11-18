@@ -105,6 +105,9 @@ class IndexController extends OntoWiki_Controller_Base
         OntoWiki_Navigation::disableNavigation();
     }
     
+	/**
+	 * UDFR home page
+	 */
     public function udfrAction()
     {
     	$this->view->url           = $this->_config->staticUrlBase;

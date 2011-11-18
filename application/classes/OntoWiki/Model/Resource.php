@@ -151,8 +151,8 @@ class OntoWiki_Model_Resource extends OntoWiki_Model
                 
                 $currentResults = $this->_store->sparqlQuery($query, $options);
                 
-                if (isset($currentResults['bindings'])) {
-                    $this->_queryResults[$graph] = $currentResults['bindings'];
+                if (isset($currentResults['results']['bindings'])) {
+                    $this->_queryResults[$graph] = $currentResults['results']['bindings'];
                 } else {
                     $this->_queryResults[$graph] = array();
                 }
@@ -270,6 +270,8 @@ class OntoWiki_Model_Resource extends OntoWiki_Model
                             $event->datatype = $row['object']['datatype'];
                             $event->property = $predicateUri;
                             $value['object'] = $event->trigger();
+                            // keep unmodified value in content
+                            $value['content'] = $row['object']['value'];
 
                             if (!$event->handled()) {
                                 // object (modified by plug-ins)
@@ -300,7 +302,9 @@ class OntoWiki_Model_Resource extends OntoWiki_Model
                                 $event->language = $row['object']['xml:lang'];
                             }
                             // trigger
-                            $value['object'] = $event->trigger();
+                            $value['object']  = $event->trigger();
+                            // keep unmodified value in content
+                            $value['content'] = $row['object']['value'];
 
                             // set default if event has not been handled
                             if (!$event->handled()) {
@@ -355,7 +359,7 @@ class OntoWiki_Model_Resource extends OntoWiki_Model
                                     true
                                 );
                             } else {
-                                $hasMoreUrl = new OntoWiki_Url(array('controller' => 'querybuilding', 'action' => 'editor'), array());
+                                $hasMoreUrl = new OntoWiki_Url(array('controller' => 'queries', 'action' => 'editor'), array());
                                 $hasMoreUrl->setParam(
                                     'query',
                                     'SELECT ?value WHERE {<'.$this->_uri.'> <'.$predicateUri.'> ?value}'

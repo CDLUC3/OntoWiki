@@ -93,7 +93,7 @@ class OntoWiki_Model_Instances extends OntoWiki_Model
         $this->_resourceVar = new Erfurt_Sparql_Query2_Var("resourceUri");
 
         $this->allTriple = new Erfurt_Sparql_Query2_Triple($this->_resourceVar, new Erfurt_Sparql_Query2_Var("p"), new Erfurt_Sparql_Query2_Var("o"));
-        $this->_resourceQuery->addElement($this->allTriple);
+        $this->addAllTriple();
         
         //show resource uri
         $this->_resourceQuery->addProjectionVar($this->_resourceVar);
@@ -194,13 +194,11 @@ class OntoWiki_Model_Instances extends OntoWiki_Model
     }
 
    /**
-    * add ?resourceUri ?p ?o to the query
+    * add ?resourceUri ?p ?o to the resource query
     * TODO: support objects as resources? optionally?
     */
-    public function addAllTriple($withObjects = false){
-        $this->_resourceQuery->addElement(
-            $this->allTriple
-        );
+    public function addAllTriple(){
+        $this->_resourceQuery->addElement($this->allTriple);
     }
     
     /**
@@ -1022,8 +1020,8 @@ class OntoWiki_Model_Instances extends OntoWiki_Model
 
         $result = $this->_results['results']['bindings'];
         
+        //fill titlehelper
         $titleHelper = new OntoWiki_Model_TitleHelper($this->_model);
-
         foreach ($result as $row) {
             foreach ($this->_shownProperties as $propertyUri => $property) {
                 if (
@@ -1537,6 +1535,22 @@ class OntoWiki_Model_Instances extends OntoWiki_Model
 
         //remove duplicate triples...
         $this->_valueQuery->optimize();
+        
+        //fix for a strange issue with mysql/zenddb where a query with only optionals fails (but there is a magic/unkown condition, that makes it work for some queries!?)
+        if($this->_store->getBackendName() == 'ZendDb'){
+            $hasTriple = false;
+            foreach($this->_valueQuery->getWhere()->getElements() as $element){
+                if($element instanceof Erfurt_Sparql_Query2_IF_TriplesSameSubject){
+                    $hasTriple = true;
+                    break;
+                }
+            }
+            if(!$hasTriple){
+                $this->_valueQuery->getWhere()->addElement(
+                   new Erfurt_Sparql_Query2_Triple($this->_resourceVar, new Erfurt_Sparql_Query2_Var("p"), new Erfurt_Sparql_Query2_Var("o"))
+                );
+            }
+        }
 
         $this->_valueQueryUptodate = true;
 
