@@ -1,31 +1,23 @@
 <?php
-/*
- * This File is edited by UDFR for different requirement
- */
-
-/**
- * This file is part of the {@link http://ontowiki.net OntoWiki} project.
- *
- * @copyright Copyright (c) 2011, {@link http://aksw.org AKSW}
- * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
- */
 
 /**
  * OntoWiki service controller.
- *
+ * 
  * @package    application
  * @subpackage mvc
+ * @copyright  Copyright (c) 2010, {@link http://aksw.org AKSW}
+ * @license    http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  */
 class ServiceController extends Zend_Controller_Action
 {
     /** @var OntoWiki */
     protected $_owApp = null;
-
+    
     /** @var Zend_Config */
     protected $_config = null;
-
+    
     /**
-     * Attempts an authentication to the underlying Erfurt framework via
+     * Attempts an authentication to the underlying Erfurt framework via 
      * HTTP GET/POST parameters.
      */
     public function authAction()
@@ -38,7 +30,7 @@ class ServiceController extends Zend_Controller_Action
                 exit();
             }
         }
-
+    
         // fetch params
         if (isset($this->_request->logout)) {
             $logout = $this->_request->logout == 'true' ? true : false;
@@ -50,7 +42,7 @@ class ServiceController extends Zend_Controller_Action
             // $this->_response->setRawHeader('');
             exit();
         }
-
+      
         if ($logout) {
             // logout
             Erfurt_Auth::getInstance()->clearIdentity();
@@ -61,7 +53,7 @@ class ServiceController extends Zend_Controller_Action
             // authenticate
             $result = $owApp->erfurt->authenticate($username, $password);
         }
-
+      
         // return HTTP result
         if ($result->isValid()) {
             // return success (200)
@@ -73,7 +65,7 @@ class ServiceController extends Zend_Controller_Action
             exit();
         }
     }
-
+    
     /**
      * Entity search
      */
@@ -81,12 +73,12 @@ class ServiceController extends Zend_Controller_Action
     {
         $type  = (string)$this->_request->getParam('type', 's');
         $match = (string)$this->_request->getParam('match');
-
+        
         $type = $type[0]; // use only first letter
-
+        
         if ($this->_owApp->selectedModel && strlen($match) > 2) {
             $namespaces = $this->_owApp->selectedModel->getNamespaces();
-
+            
             $namespacesFlipped = array_flip($namespaces);
             $nsFilter = array();
             foreach ($namespacesFlipped as $prefix => $uri) {
@@ -94,7 +86,7 @@ class ServiceController extends Zend_Controller_Action
                     $nsFilter[] = 'FILTER (regex(str(?' . $type . '), "' . $uri . '"))';
                 }
             }
-
+            
             $store = $this->_owApp->selectedModel->getStore();
             $query = Erfurt_Sparql_SimpleQuery::initWithString(
                 'SELECT DISTINCT ?' . $type . '
@@ -113,17 +105,17 @@ class ServiceController extends Zend_Controller_Action
         if (isset($this->_request->entry)) {
             $options['entry'] = $this->_request->entry;
         }
-
-        $model = new OntoWiki_Model_Hierarchy(Erfurt_App::getInstance()->getStore(),
-                                              $this->_owApp->selectedModel,
+        
+        $model = new OntoWiki_Model_Hierarchy(Erfurt_App::getInstance()->getStore(), 
+                                              $this->_owApp->selectedModel, 
                                               $options);
-
+        
         $this->view->open = true;
         $this->view->classes = $model->getHierarchy();
         $this->_response->setBody($this->view->render('partials/hierarchy_list.phtml'));
         // $this->_response->setBody(json_encode($model->getHierarchy()));
     }
-
+    
     /**
      * Constructor
      */
@@ -133,7 +125,7 @@ class ServiceController extends Zend_Controller_Action
         $this->_owApp   = OntoWiki::getInstance();
         $this->_config  = $this->_owApp->config;
         $this->_session = $this->_owApp->session;
-
+        
         // prepare Ajax context
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('view', 'html')
@@ -141,7 +133,7 @@ class ServiceController extends Zend_Controller_Action
                     ->addActionContext('process', 'json')
                     ->initContext();
     }
-
+    
     /**
      * Menu Action to generate JSON serializations of OntoWiki_Menu for context-, module-, component-menus
      */
@@ -160,7 +152,7 @@ class ServiceController extends Zend_Controller_Action
             $moduleRegistry = OntoWiki_Module_Registry::getInstance();
             $menu = $moduleRegistry->getModule($module)->getContextMenu();
         }
-
+        
         if (!empty($resource)) {
             $models = array_keys($this->_owApp->erfurt->getStore()->getAvailableModels(true));
             $isModel = in_array($resource, $models);
@@ -179,13 +171,13 @@ class ServiceController extends Zend_Controller_Action
                 if ($isModel) {
                     $url->setParam('m',$resource,false);
                 }
-                $url->setParam('r',$resource,true);
+                $url->setParam('r',$resource,true);                
                 $menu->prependEntry( 'Delete Resource', (string) $url );
 
                 // edit resource option
                 $menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
             }
-
+            
             // add resource menu entries
             $url = new OntoWiki_Url(
                 array( 'action' => 'view'),
@@ -200,14 +192,14 @@ class ServiceController extends Zend_Controller_Action
                 'View Resource',
                 (string)$url
             );
-
-            if ($isModel) {
+            
+            if ($isModel) {    
                 // add a seperator
                 $menu->prependEntry(OntoWiki_Menu::SEPARATOR);
-
+                
                 // can user delete models?
                 if ( $this->_owApp->erfurt->getAc()->isModelAllowed('edit', $resource) &&
-                     $this->_owApp->erfurt->getAc()->isActionAllowed('ModelManagement')
+                     $this->_owApp->erfurt->getAc()->isActionAllowed('ModelManagement') 
                 ) {
 
                     $url = new OntoWiki_Url(
@@ -221,8 +213,8 @@ class ServiceController extends Zend_Controller_Action
                         (string)$url
                     );
                 }
-
-
+                
+                
                 // add entries for supported export formats
                 foreach (array_reverse(Erfurt_Syntax_RdfSerializer::getSupportedFormats()) as $key => $format) {
 
@@ -238,8 +230,8 @@ class ServiceController extends Zend_Controller_Action
                         (string)$url
                     );
                 }
-
-
+                
+                
                 // check if model could be edited (prefixes and data)
                 if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $resource)) {
 
@@ -263,7 +255,7 @@ class ServiceController extends Zend_Controller_Action
                         (string)$url
                     );
                 }
-
+                
 
                 // Select Knowledge Base
                 $url = new OntoWiki_Url(
@@ -277,19 +269,19 @@ class ServiceController extends Zend_Controller_Action
                 );
             } else {
                 $query = Erfurt_Sparql_SimpleQuery::initWithString(
-                    'SELECT *
-                     FROM <' . (string)$this->_owApp->selectedModel . '>
+                    'SELECT * 
+                     FROM <' . (string)$this->_owApp->selectedModel . '> 
                      WHERE {
-                        <' . $resource . '> a ?type  .
+                        <' . $resource . '> a ?type  .  
                      }'
                 );
                 $results[] = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
 
                 $query = Erfurt_Sparql_SimpleQuery::initWithString(
-                    'SELECT *
+                    'SELECT * 
                      FROM <' . (string)$this->_owApp->selectedModel . '>
                      WHERE {
-                        ?inst a <' . $resource . '> .
+                        ?inst a <' . $resource . '> .    
                      } LIMIT 2'
                 );
 
@@ -298,19 +290,18 @@ class ServiceController extends Zend_Controller_Action
                 } else {
                     $hasInstances = false;
                 }
-				//var_dump($results[0]);
-				//var_dump($hasInstances);
+
                 $typeArray = array();
                 foreach ($results[0] as $row) {
                     $typeArray[] = $row['type'];
                 }
-				//var_dump($typeArray); exit;
+
                 if (in_array(EF_RDFS_CLASS, $typeArray) ||
                     in_array(EF_OWL_CLASS, $typeArray)  ||
                     $hasInstances
                 ) {
+                    
                     // add a seperator
-
                     $menu->prependEntry(OntoWiki_Menu::SEPARATOR);
 
                     $url = new OntoWiki_Url(
@@ -319,19 +310,9 @@ class ServiceController extends Zend_Controller_Action
                     );
                     $url->setParam('class',$resource,false);
                     $url->setParam('init',"true",true);
-					
-                    // UDFR - Abhi - Search for last '#' in resource string
-                    if (strrchr($resource, "#")){
-                    	$search = strrchr($resource, "#");
-                    	$trim = substr($search, 1, 8);	
-                    }
-                    else {
-                    	$search = strrchr($resource, "/");
-                    	$trim = substr($search, 1, 8);	
-                    }
-					
+
                     // add class menu entries
-                    if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) && $trim != 'Abstract') {  // Don't allow create instance for Abstract classes
+                    if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
                         $menu->prependEntry(
                             'Create Instance',
                             "javascript:createInstanceFromClassURI('$resource');"
@@ -344,47 +325,47 @@ class ServiceController extends Zend_Controller_Action
                      // ->prependEntry('Create Instance', $this->_config->urlBase . 'index/create/?r=')
                      // ->prependEntry('Create Subclass', $this->_config->urlBase . 'index/create/?r=');
                 }
-            }
+            }        
         }
-
+        
         // Fire a event;
         $event = new Erfurt_Event('onCreateMenu');
         $event->menu = $menu;
         $event->resource = $resource;
-
+        
         if (isset($isModel)) {
             $event->isModel = $isModel;
         }
-
-
+        
+        
         $event->model = $this->_owApp->selectedModel;
         $event->trigger();
 
         echo $menu->toJson();
     }
-
+    
     public function preDispatch()
     {
         // disable auto-rendering
         $this->_helper->viewRenderer->setNoRender();
-
+        
         // disable layout for Ajax requests
         $this->_helper->layout()->disableLayout();
     }
-
+    
     public function sessionAction()
     {
         if (!isset($this->_request->name)) {
             throw new OntoWiki_Exception("Missing parameter 'name'.");
             exit;
         }
-
+               
         if (isset($this->_request->namespace)) {
             $namespace = $this->_request->namespace;
         } else {
             $namespace = _OWSESSION;
         }
-
+        
         $session = new Zend_Session_Namespace($namespace);
         $name    = $this->_request->name;
         $method = 'set'; // default
@@ -402,13 +383,13 @@ class ServiceController extends Zend_Controller_Action
         if (isset($this->_request->value) && isset($this->_request->valueIsSerialized) && $this->_request->valueIsSerialized == "true") {
             $value = json_decode(stripslashes($value), true);
         }
-
+        
         if (isset($this->_request->key)) {
             $key = $this->_request->key;
         } else if ($method == 'setArrayValue' || $method == 'unsetArrayKey') {
             throw new OntoWiki_Exception('Missing parameter "key".');
             exit;
-        }
+        } 
 
         switch ($method) {
             case 'set':
@@ -462,15 +443,15 @@ class ServiceController extends Zend_Controller_Action
                 unset($session->$name);
                 break;
         }
-
-        $msg = 'sessionStore: '
-             . $name
-             . ' = '
+        
+        $msg = 'sessionStore: ' 
+             . $name 
+             . ' = ' 
              . print_r($session->$name, true);
-
+        
         $this->_owApp->logger->debug($msg);
     }
-
+    
     /**
      * OntoWiki Sparql Endpoint
      *
@@ -482,7 +463,7 @@ class ServiceController extends Zend_Controller_Action
         $this->_helper->viewRenderer->setNoRender();
         // disable layout for Ajax requests
         $this->_helper->layout()->disableLayout();
-
+        
         $store    = OntoWiki::getInstance()->erfurt->getStore();
         $response = $this->getResponse();
 
@@ -494,7 +475,7 @@ class ServiceController extends Zend_Controller_Action
         }
         $defaultGraph = $this->_request->getParam('default-graph-uri', null);
         $namedGraph   = $this->_request->getParam('named-graph-uri', null);
-
+          
         if (!empty($queryString)) {
             $query = Erfurt_Sparql_SimpleQuery::initWithString($queryString);
 
@@ -505,7 +486,7 @@ class ServiceController extends Zend_Controller_Action
             if (null !== $namedGraph) {
                 $query->setFromNamed((array)$namedGraph);
             }
-
+ 
             // check graph availability
             $ac = Erfurt_App::getInstance()->getAc();
             foreach (array_merge($query->getFrom(), $query->getFromNamed()) as $graphUri) {
@@ -516,7 +497,7 @@ class ServiceController extends Zend_Controller_Action
                         $response->setHeader('WWW-Authenticate', 'Basic realm="OntoWiki"');
                         $response->sendResponse();
                         exit;
-
+                        
                     } else {
                         $response->setRawHeader('HTTP/1.1 500 Internal Server Error')
                                  ->setBody('QueryRequestRefused')
@@ -525,19 +506,19 @@ class ServiceController extends Zend_Controller_Action
                     }
                 }
             }
-
+            
             $typeMapping = array(
-                'application/sparql-results+xml'  => 'xml',
-                'application/json'                => 'json',
+                'application/sparql-results+xml'  => 'xml', 
+                'application/json'                => 'json', 
                 'application/sparql-results+json' => 'json'
             );
-
+            
             try {
                 $type = OntoWiki_Utils::matchMimetypeFromRequest($this->_request, array_keys($typeMapping));
             } catch (Exeption $e) {
-                //
+                // 
             }
-
+            
             if (empty($type) && isset($this->_request->callback)) {
                 // JSONp
                 $type = 'application/sparql-results+json';
@@ -555,7 +536,7 @@ class ServiceController extends Zend_Controller_Action
                          ->sendResponse();
                 exit;
             }
-
+            
             if (/* $typeMapping[$type] == 'json' && */isset($this->_request->callback)) {
                 // return jsonp
                 $response->setHeader('Content-Type', 'application/javascript');
@@ -567,12 +548,12 @@ class ServiceController extends Zend_Controller_Action
                 // return normally
                 $response->setBody($result);
             }
-
+            
             $response->sendResponse();
             exit;
         }
     }
-
+    
     /**
      * OntoWiki Update Endpoint
      *
@@ -580,12 +561,12 @@ class ServiceController extends Zend_Controller_Action
      * @todo LOAD <> INTO <>, CLEAR GRAPH <>, CREATE[SILENT] GRAPH <>, DROP[ SILENT] GRAPH <>
      */
     public function updateAction()
-    {
+    {        
         // service controller needs no view renderer
         $this->_helper->viewRenderer->setNoRender();
         // disable layout for Ajax requests
         $this->_helper->layout()->disableLayout();
-
+    
         $store        = OntoWiki::getInstance()->erfurt->getStore();
         $response     = $this->getResponse();
         $defaultGraph = $this->_request->getParam('default-graph-uri', null);
@@ -594,7 +575,7 @@ class ServiceController extends Zend_Controller_Action
         $deleteGraph  = null;
         $insertModel  = null;
         $deleteModel  = null;
-
+        
         if (isset($this->_request->query)) {
             // we have a query, enter SPARQL/Update mode
             $query = $this->_request->getParam('query', '');
@@ -617,12 +598,12 @@ class ServiceController extends Zend_Controller_Action
 
             OntoWiki::getInstance()->logger->info('SPARQL/Update insertGraph: ' . $insertGraph);
             OntoWiki::getInstance()->logger->info('SPARQL/Update insertTriples: ' . $insertTriples);
-
+            
             // delete
             preg_match('/DELETE\s+DATA(\s+FROM\s*<(.+)>)?\s*{\s*([^}]*)/i', $query, $matches);
             $deleteGraph   = (isset($matches[2]) && ($matches[2] !== '')) ? $matches[2] : null;
             $deleteTriples = isset($matches[3]) ? $matches[3] : '';
-
+            
             if ((null === $deleteGraph) && ($deleteTriples !== '')) {
                 if (null !== $defaultGraph) {
                     $deleteGraph = $defaultGraph;
@@ -631,17 +612,17 @@ class ServiceController extends Zend_Controller_Action
                     $deleteGraph = $namedGraph;
                 }
             }
-
+            
             // TODO: normalize literals
-
+            
             $parser = Erfurt_Syntax_RdfParser::rdfParserWithFormat('nt');
             $insert = $parser->parse($insertTriples, Erfurt_Syntax_RdfParser::LOCATOR_DATASTRING);
             $parser->reset();
             $delete = $parser->parse($deleteTriples, Erfurt_Syntax_RdfParser::LOCATOR_DATASTRING);
-
+            
             if (null !== $insertGraph) {
                 try {
-                    $insertModel = $insertGraph ? $store->getModel($insertGraph) : $store->getModel($namedGraph);
+                    $insertModel = $insertGraph ? $store->getModel($insertGraph) : $store->getModel($namedGraph);       
                 } catch (Erfurt_Store_Exception $e) {
                     // TODO: error
                     if (defined('_OWDEBUG')) {
@@ -650,7 +631,7 @@ class ServiceController extends Zend_Controller_Action
                     exit;
                 }
             }
-
+            
             if (null !== $deleteGraph) {
                 try {
                     $deleteModel = $deleteGraph ? $store->getModel($deleteGraph) : $store->getModel($namedGraph);
@@ -666,14 +647,14 @@ class ServiceController extends Zend_Controller_Action
             // no query, inserts and delete triples by JSON via param
             $insert = json_decode($this->_request->getParam('insert', '{}'), true);
             $delete = json_decode($this->_request->getParam('delete', '{}'), true);
-
+            
             if ($this->_request->has('delete_hashed')) {
                 $hashedObjectStatements = $this->_findStatementsForObjectsWithHashes(
-                    $namedGraph,
+                    $namedGraph, 
                     json_decode($this->_request->getParam('delete_hashed'), true));
                 $delete = array_merge_recursive($delete, $hashedObjectStatements);
             }
-
+            
             try {
                 $namedModel  = $store->getModel($namedGraph);
                 $insertModel = $namedModel;
@@ -686,13 +667,13 @@ class ServiceController extends Zend_Controller_Action
                 exit;
             }
         }
-
+        
         if (empty($insert) or empty($delete)) {
             // TODO: error
         }
-
+        
         $flag = false;
-
+        
         /**
          * @trigger onUpdateServiceAction is triggered when Service-Controller Update Action is executed.
          * Event contains following attributes:
@@ -707,7 +688,7 @@ class ServiceController extends Zend_Controller_Action
         $event->deleteData  = $delete;
         $event->insertData  = $insert;
         $event->trigger();
-
+        
         // writeback
         $delete = $event->deleteData;
         $insert = $event->insertData;
@@ -716,31 +697,26 @@ class ServiceController extends Zend_Controller_Action
         // delete
         if ($deleteModel && $deleteModel->isEditable()) {
             try {
-                $deleteModel->deleteMultipleStatements((array)$delete);
-                
-                $flag = true;
-                if (defined('_OWDEBUG')) {
-                    OntoWiki::getInstance()->logger->info(
-                        sprintf('Deleted statements from graph <%s>', $deleteModel->getModelUri())
-                    );
-                }
+                $count = $deleteModel->deleteMultipleStatements((array)$delete);
             } catch (Erfurt_Store_Exception $e) {
                 if (defined('_OWDEBUG')) {
                     OntoWiki::getInstance()->logger->info(
-                        'Could not delete statements from graph: ' . $e->getMessage() . PHP_EOL .
+                        'Could not delete statements from graph: ' . $e->getMessage() . PHP_EOL . 
                         'Statements: ' . print_r($delete, true)
                     );
                 }
             }
-
             
+            $flag = true;
+            if (defined('_OWDEBUG')) {
+                OntoWiki::getInstance()->logger->info(
+                    sprintf('Deleted %i statements from graph <%s>', $count, $deleteModel->getModelUri())
+                );
+            }
         }
-
+        
         // insert
         if ($insertModel && $insertModel->isEditable()) {
-            OntoWiki::getInstance()->logger->info(
-                        'add Statements: ' . print_r($delete, true)
-                    );
             $count = $insertModel->addMultipleStatements((array)$insert);
             $flag = true;
             if (defined('_OWDEBUG')) {
@@ -749,7 +725,7 @@ class ServiceController extends Zend_Controller_Action
                 );
             }
         }
-
+        
         // nothing done?
         if (!$flag) {
             // When no user is given (Anoymous) give the requesting party a chance to authenticate.
@@ -761,7 +737,7 @@ class ServiceController extends Zend_Controller_Action
                 exit;
             }
         }
-
+        
         if ($changes) {
             /**
              * @see {http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2}
@@ -772,7 +748,7 @@ class ServiceController extends Zend_Controller_Action
             $response->setBody(json_encode($changes));
         }
     }
-
+    
     /**
      * Renders a template and responds with the output.
      *
@@ -864,14 +840,14 @@ class ServiceController extends Zend_Controller_Action
         } else {
             $model = $this->_owApp->selectedModel;
         }
-
+        
         // fetch inverse parameter
         $inverse = $this->_request->getParam('inverse', 'true');
         switch ($inverse) {
             case 'false':   /* fallthrough */
             case 'no':      /* fallthrough */
             case 'off':     /* fallthrough */
-            case '0':
+            case '0':       
                 $inverse = false;
                 break;
             default:
@@ -879,7 +855,7 @@ class ServiceController extends Zend_Controller_Action
         }
 
         $store = $model->getStore();
-
+        
         // get the transitive closure
         $closure = $store->getTransitiveClosure((string)$model, $property, array($resource), $inverse);
 
@@ -889,7 +865,7 @@ class ServiceController extends Zend_Controller_Action
         $response->sendResponse();
         exit;
     }
-
+    
     /**
      * JSON output of the RDFauthor selection Cache File of the current model or
      * of the model given in parameter m
@@ -972,7 +948,7 @@ class ServiceController extends Zend_Controller_Action
                     if (!empty($ranges)) {
                         $newProperty['range'] = array_unique($ranges);
                     }
-
+                    
                     if (!empty($domains)) {
                         $newProperty['domain'] = array_unique($domains);
                     }
@@ -1012,13 +988,11 @@ class ServiceController extends Zend_Controller_Action
         $store    = OntoWiki::getInstance()->erfurt->getStore();
         $response = $this->getResponse();
         $model    = $this->_owApp->selectedModel;
-		$modelIri = $model->getModelIri();
-		
-		
+
         if (isset($this->_request->m)) {
             $model = $store->getModel($this->_request->m);
         }
-        if (empty($model)) { 
+        if (empty($model)) {
             throw new OntoWiki_Exception('Missing parameter m (model) and no selected model in session!');
             exit;
         }
@@ -1043,171 +1017,47 @@ class ServiceController extends Zend_Controller_Action
         }
 
         if ($workingMode == 'class') {
-        	//UDFR - Abhi
-        	if ($modelIri != "http://localhost/OntoWiki/Config/") {
-            	$properties = $model->sparqlQuery('
-            	select distinct ?uri
-				where
-				{
-				{?uri <'.EF_RDFS_DOMAIN.'> <'.$parameter.'>.}
-				union
-				{?uri <'.EF_RDFS_DOMAIN.'> ?super.
-				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.}
-				union
-				{?uri <'.EF_RDFS_DOMAIN.'> ?s2.
-				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.
-				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.}
-				union
-				{?uri <'.EF_RDFS_DOMAIN.'> ?s3.
-				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
-				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.
-				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
-				union
-				{?uri <'.EF_RDFS_DOMAIN.'> ?s4.
-				?s3 <'.EF_RDFS_SUBCLASSOF.'> ?s4.
-				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
-				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.
-				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
-				?uri <'.EF_RDF_TYPE.'> ?propType.
-				
-				OPTIONAL{ ?uri <'.EF_RDFS_RANGE.'>  ?rangeclass.}  
-				}
-				LIMIT 200' , array('result_format' => 'extended'));
-            	//OPTIONAL { ?value <'.EF_RDF_TYPE.'> ?rangeclass.}
-        	}
-        	else {
-        		$properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
+            $properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
                 ?s ?uri ?value.
                 ?s a <'.$parameter.'>.
                 } LIMIT 20 ', array('result_format' => 'extended'));
-        	}	
-            
-                        
         } elseif ($workingMode == 'clone') {
             # BUG: more than one values of a property are not supported right now
             # BUG: Literals are not supported right now
             $properties = $model->sparqlQuery('SELECT ?uri ?value {
                 <'.$parameter.'> ?uri ?value.
                 #FILTER (isUri(?value))
-                } LIMIT 200 ', array('result_format' => 'extended'));
-        
+                } LIMIT 20 ', array('result_format' => 'extended'));
         } elseif ($workingMode == 'edit') {
-        $properties = $model->sparqlQuery('SELECT ?uri ?value WHERE {
-                	<'.$parameter.'> ?uri ?value.
-                	} LIMIT 200 ', array('result_format' => 'extended'));
-        	if ($modelIri != "http://localhost/OntoWiki/Config/") {
-        		$properties2 = $model->sparqlQuery('select distinct ?uri
-				where
-				{<'.$parameter.'> <'.EF_RDF_TYPE.'> ?class.
-				{?uri <'.EF_RDFS_DOMAIN.'> ?class.}
-				UNION
-				{?uri <'.EF_RDFS_DOMAIN.'> ?super.
-				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.}
-				UNION
-				{?uri <'.EF_RDFS_DOMAIN.'> ?s2.
-				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.
-				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.}
-				UNION
-				{?uri <'.EF_RDFS_DOMAIN.'> ?s3.
-				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
-				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.
-				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
-				UNION
-				{?uri <'.EF_RDFS_DOMAIN.'> ?s4.
-				?s3 <'.EF_RDFS_SUBCLASSOF.'> ?s4.
-				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
-				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.
-				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
-				?uri <'.EF_RDF_TYPE.'> ?propType.
-				OPTIONAL{ ?uri <'.EF_RDFS_RANGE.'>  ?rangeclass.}  
-				}
-				LIMIT 200', array('result_format' => 'extended'));
-        	}
-      	} else { // resource
+            $properties = $model->sparqlQuery('SELECT ?uri ?value {
+                <'.$parameter.'> ?uri ?value.
+                } LIMIT 20 ', array('result_format' => 'extended'));
+        } else { // resource
             $properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
                 <'.$parameter.'> ?uri ?value.
-                } LIMIT 200 ', array('result_format' => 'extended'));
+                } LIMIT 20 ', array('result_format' => 'extended'));
         }
-
+        
         // empty object to hold data
         $output        = new stdClass();
         $newProperties = new stdClass();
-
-        $properties = $properties['results']['bindings'];
         
-       	/*echo "abhishek-----<pre>";
-            	var_dump($properties2['results']['bindings']); echo '<br>';
-            	//var_dump($properties2); echo '<br>';
-        echo "</pre>";
-        exit;*/
-		
-        //UDFR - Abhi - create an array which has no repeat properties
-        if (isset($properties2)) {
-       		$properties2 = $properties2['results']['bindings'];
-       		$i = 0;
-       		foreach($properties as $key){
-            	$aa = $key['uri']['value'];
-            	foreach($properties2 as $key2){
-            		if ($aa == $key2['uri']['value']){
-            			$array3[$i] =  $key2;
-            			$i=$i+1;
-					}
-            	}
-    		}
-    		if (isset ($array3)) {
-    			$properties2 = $this->reindex($properties2, $array3);
-    		}
-    		$properties = array_merge((array)$properties, (array)$properties2);	
-    	}
+        $properties = $properties['results']['bindings'];
         
         // feed title helper w/ URIs
         $titleHelper = new OntoWiki_Model_TitleHelper($model);
         $titleHelper->addResources($properties, 'uri');
-
+        
         if (!empty($properties)) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-        	// Abhi - UDFR - Adding properties by default (rdf:ype and rdfs:label)
-        	if ($modelIri != "http://localhost/OntoWiki/Config/" && $workingMode == 'class') {
-        	 	$value = new stdClass();
-                $value->value = $parameter;
-                $value->type = 'uri';
-                $value->hidden = true;
-                $uri = EF_RDF_TYPE;
-                $newProperties->$uri = array($value);
-            	$value = new stdClass();
-            	$value->type = 'literal';
-            	$value->title = 'label';
-            	$uri = EF_RDFS_LABEL;
-            	$newProperties->$uri = array($value);
-        	}               
-        	// Abhi end
-            
-        	foreach ($properties as $property) {
-                
-            	$value = new stdClass();
-                $currentUri   = $property['uri']['value'];
-                          	
-                if(array_key_exists('value', $property)) {
-                	$currentValue = $property['value']['value'];
-                	$currentType  = $property['value']['type'];	
-                	        
-                if ($currentType == 'literal' || $currentType == 'typed-literal') {                  
-=======
-            
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
-=======
             foreach ($properties as $property) {
-
+                
                 $currentUri   = $property['uri']['value'];
                 $currentValue = $property['value']['value'];
                 $currentType  = $property['value']['type'];
 
                 $value = new stdClass();
-
-                if ($currentType == 'literal' || $currentType == 'typed-literal') {
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
+                
+                if ($currentType == 'literal' || $currentType == 'typed-literal') {                    
                     if (isset($property['value']['datatype'])) {
                         $value->datatype = $property['value']['datatype'];
                     } else if (isset($property['value']['xml:lang'])) {
@@ -1220,67 +1070,45 @@ class ServiceController extends Zend_Controller_Action
                     }
                     */
                 }
-                }
 
                 // return title from titleHelper
                 $value->title = $titleHelper->getTitle($currentUri);
-
+                
                 if ($currentUri == EF_RDF_TYPE) {
-
                     switch ($workingMode) {
                         case 'resource':
                             /* fallthrough */
                         case 'clone':
                             $value->value  = $currentValue;
-                            $value->type   = $currentType;
                             break;
                         case 'edit':
                             $value->value  = $currentValue;
-                            $value->type   = $currentType;
-                            $value->hidden = true;
                             break;
                         case 'class':
                             $value->value  = $parameter;
                             break;
                     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    //$value->type   = $currentType;
-                    #$value->hidden = true;
                     
-                 } else { // $currentUri != EF_RDF_TYPE 
-                	if ( ($workingMode == 'clone') || ($workingMode == 'edit') ) {
-                	if(array_key_exists('value', $property )) {
-                		$value->value = $currentValue;
-=======
-
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
-=======
-
                     $value->type   = $currentType;
                     #$value->hidden = true;
-
+                    
                 } else { // $currentUri != EF_RDF_TYPE
                     if ( ($workingMode == 'clone') || ($workingMode == 'edit') ) {
                         $value->value = $currentValue;
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
                         $value->type  = $currentType;
-                    } } 
+                    }
                 }
-				 
-				 
+
                 // deal with multiple values of a property
                 if (isset($newProperties->$currentUri)) {
-                	$tempProperty = $newProperties->$currentUri;
+                    $tempProperty = $newProperties->$currentUri;
                     $tempProperty[] = $value;
                     $newProperties->$currentUri = $tempProperty;
                 } else {
-                    $newProperties->$currentUri = array($value);                                       
+                    $newProperties->$currentUri = array($value);
                 }
-            } // foreach 
-            
+            } // foreach
             $output->$resourceUri = $newProperties;
-            
         } else {
             // empty sparql results -> start with a plain resource
             if ($workingMode == 'class') {
@@ -1292,59 +1120,23 @@ class ServiceController extends Zend_Controller_Action
                 $uri = EF_RDF_TYPE;
                 $newProperties->$uri = array($value);
             }
-
+            
             $value = new stdClass();
             $value->type = 'literal';
             $value->title = 'label';
             $uri = EF_RDFS_LABEL;
             $newProperties->$uri = array($value);
-
+            
             $output->$resourceUri = $newProperties;
         }
-        /*echo "abhishek-----<pre>";
-            	var_dump($newProperties);
-        echo "</pre>";
-		 exit;*/
+
         // send the response
         $response->setHeader('Content-Type', 'application/json');
         $response->setBody(json_encode($output));
         $response->sendResponse();
         exit;
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
- 
-    //UDFR - key delete function
-	protected function reindex(array $source, $blacklist = array())
-	{
-	    $j = 0;
-	    foreach ($source as $key => $val) {
-        	if ($key != $j) {
-	            unset($source[$key]);
-            	$source[$j] = $val;
-        	}
-	        
-        	$j++;
-    	}
-	    
-	    foreach ($source as $key => $val) {
-        	foreach ($blacklist as $var) {
-            	if ($val === $var) {
-	                unset($source[$key]);    
-                	$source = $this->reindex($source, $blacklist);
-            	}
-        	}
-    	}
-	    
-	    return $source;
-	}
-	
-=======
-
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
-=======
-
->>>>>>> 4e79e71bdf133658fdf3c424a2141631728ff8fe
+    
     protected function _findStatementsForObjectsWithHashes($graphUri, $indexWithHashedObjects, $hashFunc = 'md5')
     {
         $queryOptions = array(
@@ -1355,16 +1147,16 @@ class ServiceController extends Zend_Controller_Action
             foreach ($predicates as $predicate => $hashedObjects) {
                 $query = "SELECT ?o FROM <$graphUri> WHERE {<$subject> <$predicate> ?o .}";
                 $queryObj = Erfurt_Sparql_SimpleQuery::initWithString($query);
-
+                
                 if ($queryResult = $this->_owApp->erfurt->getStore()->sparqlQuery($queryObj, $queryOptions)) {
                     $bindings = $queryResult['results']['bindings'];
-
+                    
                     for ($i = 0, $max = count($bindings); $i < $max; $i++) {
                         $currentObject = $bindings[$i]['o'];
-
+                        
                         $objectString = Erfurt_Utils::buildLiteralString(
-                            $currentObject['value'],
-                            isset($currentObject['datatype']) ? $currentObject['datatype'] : null,
+                            $currentObject['value'], 
+                            isset($currentObject['datatype']) ? $currentObject['datatype'] : null, 
                             isset($currentObject['xml:lang']) ? $currentObject['xml:lang'] : null);
 
                         $hash = $hashFunc($objectString);
@@ -1376,9 +1168,9 @@ class ServiceController extends Zend_Controller_Action
                             if (!isset($result[$subject][$predicate])) {
                                 $result[$subject][$predicate] = array();
                             }
-
+                            
                             $objectSpec = array(
-                                'value' => $currentObject['value'],
+                                'value' => $currentObject['value'], 
                                 'type'  => str_replace('typed-', '', $currentObject['type'])
                             );
                             if (isset($currentObject['datatype'])) {
@@ -1386,14 +1178,14 @@ class ServiceController extends Zend_Controller_Action
                             } else if (isset($currentObject['xml:lang'])) {
                                 $objectSpec['lang'] = $currentObject['xml:lang'];
                             }
-
+                            
                             array_push($result[$subject][$predicate], $objectSpec);
                         }
                     }
                 }
             }
         }
-
+        
         return $result;
     }
 }

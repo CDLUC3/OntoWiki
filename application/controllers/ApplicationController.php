@@ -188,7 +188,6 @@ class ApplicationController extends OntoWiki_Controller_Base
         $this->view->username      = '';
         $this->view->readonly      = '';
         $this->view->email         = '';
-        $this->view->url           = $this->_config->staticUrlBase;
 		$toolbar = $this->_owApp->toolbar;
 		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
 		        ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
@@ -196,15 +195,13 @@ class ApplicationController extends OntoWiki_Controller_Base
 
         $post = $this->_request->getPost();
 
-        /* Not a requirement for UDFR
-			$this->_owApp->appendMessage(new OntoWiki_Message(
+		$this->_owApp->appendMessage(new OntoWiki_Message(
             'Already own an <span class="openid">OpenID?</span> <a href="' . $this->_config->urlBase . 'application/openidreg">Register here</a>', 
             OntoWiki_Message::INFO, 
             array('escape' => false, 'translate' => false)
             ));
-        */
 
-        $this->_owApp->appendMessage(
+			$this->_owApp->appendMessage(
             new OntoWiki_Message(
                 'Already own an <span class="openid">OpenID?</span> <a href="'
                 . $this->_config->urlBase
@@ -228,15 +225,10 @@ class ApplicationController extends OntoWiki_Controller_Base
                 }
             }
 
- 
- 
-            $email     	= $post['email'];
-            $username  	= $post['username'];
-            $password  	= $post['password'];
+            $email       = $post['email'];
+            $username    = $post['username'];
+            $password    = $post['password'];
             $passwordTwo = $post['password2'];
-            $string    	= strtoupper($_SESSION['string']);	// UDFR - Abhi - Captcha 
-	    	$userstring = strtoupper($post['userstring']);	// UDFR - Abhi - Captcha
-
             $emailValidator = new Zend_Validate_EmailAddress();
 
             if (!$this->_erfurt->isActionAllowed('RegisterNewUser') or
@@ -283,14 +275,6 @@ class ApplicationController extends OntoWiki_Controller_Base
             ) {
                 $message    = 'Password does not match regular expression set in system configuration';
                 $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
- 
- 
-
-            // UDFR - Abhi - Captcha validation
-            } else if ($string !== $userstring) {
-				$message    = 'Challenge String does not match';
-                $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));    
-
             } else {
                 // give default group?
                 if (isset($actionConfig['defaultGroup'])) {

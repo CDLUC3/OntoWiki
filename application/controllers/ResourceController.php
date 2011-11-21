@@ -211,8 +211,8 @@ class ResourceController extends OntoWiki_Controller_Base {
             // TODO: check acl
             $toolbar->appendButton(OntoWiki_Toolbar::EDIT, array('name' => 'Edit Properties'));
 
-        	$toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
-                'name'  => 'Clone Resource',
+            $toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
+                'name'  => 'Clone',
                 'class' => 'clone-resource'
             ));
             // ->appendButton(OntoWiki_Toolbar::EDITADD, array('name' => 'Add Property', 'class' => 'property-add'));
@@ -223,10 +223,8 @@ class ResourceController extends OntoWiki_Controller_Base {
             $toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
                     ->appendButton(OntoWiki_Toolbar::DELETE, $params);
 
-            //UDFR - Abhi - to activate Inline Add Property functionality uncomment lines below
-            //$toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
-              //      ->prependButton(OntoWiki_Toolbar::ADD, array('name' => 'Add Property', '+class' => 'hidden edit property-add'));
-
+            $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
+                    ->prependButton(OntoWiki_Toolbar::ADD, array('name' => 'Add Property', '+class' => 'property-add'));
 
             $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
                     ->prependButton(OntoWiki_Toolbar::CANCEL, array('+class' => 'hidden'))
