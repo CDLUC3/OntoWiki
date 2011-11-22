@@ -1,8 +1,3 @@
-<!-- UDFR - Abhi Additional Requirement for Review Checkbox -->
-<form name	="<?php $this->formName;?>" 
-	method	="<?php $this->formMethod;?>" 
-	action	="<?php $this->formActionUrl;?>" 
-	enctype	="<?php $this->formEncoding;?>">
 <?php if (isset($this->prePropertiesContent)): ?>
     <div><?php echo $this->prePropertiesContent; ?></div>    
 <?php endif; ?>
@@ -30,20 +25,22 @@
                     </th>
                 </tr>
             <?php endif; ?>
-        	<th width="50"><?php echo $this->_('Review'); ?></th>				<!-- Abhi Review column header -->
-			<th></th><th></th><th></th>											    
+        	<?php if(isset($this->review)) : ?> <th width="50"><?php echo $this->_('Review'); ?></th>				<!-- Abhi Review column header -->
+			<th></th><th></th><th></th>		
+			<?php endif; ?>
         	<?php foreach ($predicatesForGraph as $uri => $predicate): ?>
             	<?php $currentPredicate = $this->predicates[$graph][$uri] ?>
             <tr>
             	<!--UDFR- Abhi- Reviewer role UI  -->
-            	<?php foreach ($this->values[$graph][$uri] as $entry) {
+            	<?php if(isset($this->review)) : ?>
+				<?php foreach ($this->values[$graph][$uri] as $entry) {
             			if (NULL != $entry['uri']) {
             				$currentObject = $entry['uri']; 
             			} else $currentObject = $entry['object'];
             		}?>
             	<td class="selector">
-            	<?php $sql = 'SELECT review_flag FROM ef_reviews WHERE s = \'' . addslashes($this->resourceUri) . '\' AND p = \'' . addslashes($currentPredicate['uri']). '\' AND o = \'' . addslashes($currentObject) . '\'';?>
-				<?php $result = $this->store->sqlQuery($sql);?>
+            	<?php $sql = 'SELECT review_flag FROM ef_reviews WHERE s = \'' . addslashes($this->resourceUri) . '\' AND p = \'' . addslashes($currentPredicate['uri']). '\' AND o = \'' . addslashes($currentObject) . '\''; ?>
+				<?php if (isset($this->store)) { $result = $this->store->sqlQuery($sql); } ?>
 		        <?php $a=1; 
 					if (!empty($result)){
 				       if (in_array((int)$a ,$result[0])){
@@ -56,7 +53,12 @@
 					else {
 					    $validate=0; 
 				}?>
-            	    <input <?php if (!$this->review || $validate) echo 'disabled'; ?>
+            	    <!-- UDFR - Abhi Additional Requirement for Review Checkbox -->
+					<form name	="<?php $this->formName;?>" 
+					method	="<?php $this->formMethod;?>" 
+					action	="<?php $this->formActionUrl;?>" 
+					enctype	="<?php $this->formEncoding;?>">
+					<input <?php if (!$this->review || $validate) echo 'disabled'; ?>
 					<?php if($validate==1): echo 'checked'; $check_img=true;  else: $check_img=false; endif; ?>
 	                type="checkbox"
         	        id="review-action"
@@ -67,7 +69,8 @@
 		    	<?php if($check_img): ?>
 		    	<img src="<?php echo $this->url ?>extensions/themes/silverblue/images/icon-success.png" alt="Reviewed" title="Statement Reviewed"/>
 		    	<?php endif; ?>
-        		</td>								
+        		</td>	
+				<?php endif; ?>
         		<!-- Abhi End Adding-->
             	        		
                 <td width="120">

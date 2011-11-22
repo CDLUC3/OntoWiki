@@ -189,6 +189,7 @@ class ApplicationController extends OntoWiki_Controller_Base
         $this->view->username      = '';
         $this->view->readonly      = '';
         $this->view->email         = '';
+		$this->view->url           = $this->_config->staticUrlBase; // UDFR - Abhi - base url for view
 
 		$toolbar = $this->_owApp->toolbar;
 		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
