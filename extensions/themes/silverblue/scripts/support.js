@@ -434,7 +434,7 @@ function createInstanceFromClassURI(type, dataCallback) {
                 cancelButtonTitle: 'Cancel',
                 title: 'Create New Instance of ' + type,  
                 autoParse: false, 
-                showPropertyButton: true, 
+                showPropertyButton: false, //UDFR - Abhi - not a requirement
                 onSubmitSuccess: function (responseData) {
                     var newLocation;
                     if (responseData && responseData.changed) {
@@ -481,7 +481,7 @@ function editResourceFromURI(resource) {
                 cancelButtonTitle: 'Cancel',
                 title: 'Edit Resource ' + resource,  
                 autoParse: false, 
-                showPropertyButton: true, 
+                showPropertyButton: false, //UDFR - Abhi - not a requirement
                 onSubmitSuccess: function () {
                     // HACK: reload whole page after 500 ms
                     window.setTimeout(function () {

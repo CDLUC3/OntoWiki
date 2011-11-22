@@ -222,10 +222,10 @@ class ResourceController extends OntoWiki_Controller_Base {
             );
             $toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
                     ->appendButton(OntoWiki_Toolbar::DELETE, $params);
-
+			/* UDFR - Abhi - not a requirement
             $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
                     ->prependButton(OntoWiki_Toolbar::ADD, array('name' => 'Add Property', '+class' => 'property-add'));
-
+			*/
             $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
                     ->prependButton(OntoWiki_Toolbar::CANCEL, array('+class' => 'hidden'))
                     ->prependButton(OntoWiki_Toolbar::SAVE, array('+class' => 'hidden'));
