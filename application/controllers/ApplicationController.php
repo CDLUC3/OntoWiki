@@ -127,7 +127,6 @@ class ApplicationController extends OntoWiki_Controller_Base
             $this->_owApp->selectedModel = $erfurt->getStore()->getModel((string) $this->_owApp->selectedModel);
         }
 
-
         $this->_owApp->authResult = $authResult->getMessages();
     }
 
@@ -183,18 +182,18 @@ class ApplicationController extends OntoWiki_Controller_Base
         $this->view->placeholder('main.window.title')->set('Register User');
 
         $this->view->formActionUrl = $this->_config->urlBase . 'application/register';
-		$this->view->formMethod    = 'post';
-		$this->view->formClass     = 'simple-input input-justify-left';
-		$this->view->formName      = 'registeruser';
+        $this->view->formMethod    = 'post';
+        $this->view->formClass     = 'simple-input input-justify-left';
+        $this->view->formName      = 'registeruser';
         $this->view->username      = '';
         $this->view->readonly      = '';
         $this->view->email         = '';
 		$this->view->url           = $this->_config->staticUrlBase; // UDFR - Abhi - base url for view
 
-		$toolbar = $this->_owApp->toolbar;
-		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
-		        ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
-		$this->view->placeholder('main.window.toolbar')->set($toolbar);
+        $toolbar = $this->_owApp->toolbar;
+        $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
+                ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
+        $this->view->placeholder('main.window.toolbar')->set($toolbar);
 
         $post = $this->_request->getPost();
 		/*Abhi - Not a requirement for UDFR
@@ -223,7 +222,9 @@ class ApplicationController extends OntoWiki_Controller_Base
             }
 
             $email       = $post['email'];
+            $this->view->email = $email;
             $username    = $post['username'];
+            $this->view->username = $username;
             $password    = $post['password'];
             $passwordTwo = $post['password2'];
 			$string    	= strtoupper($_SESSION['string']);	// UDFR - Abhi - Captcha 
@@ -313,9 +314,9 @@ class ApplicationController extends OntoWiki_Controller_Base
 
         $this->view->placeholder('main.window.title')->set('Register User with OpenID');
         $this->view->formActionUrl = $this->_config->urlBase . 'application/openidreg';
-		$this->view->formMethod    = 'post';
-		$this->view->formClass     = 'simple-input input-justify-left';
-		$this->view->formName      = 'registeruser';
+        $this->view->formMethod    = 'post';
+        $this->view->formClass     = 'simple-input input-justify-left';
+        $this->view->formName      = 'registeruser';
 
         // Fetch POST and GET of the request. One of them or both will be empty.
         $post = $this->_request->getPost();
@@ -390,9 +391,9 @@ class ApplicationController extends OntoWiki_Controller_Base
                 $this->view->step     = 1;
 
                 $toolbar = $this->_owApp->toolbar;
-        		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Check OpenID'))
-        		        ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
-        		$this->view->placeholder('main.window.toolbar')->set($toolbar);
+                $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Check OpenID'))
+                        ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
+                $this->view->placeholder('main.window.toolbar')->set($toolbar);
             } else if ((int)$post['step'] === 2) {
                 // Step 2: OpenID was verified and user clicked on register button.
                 $openid = $post['openid_url'];
@@ -473,9 +474,9 @@ class ApplicationController extends OntoWiki_Controller_Base
             $this->view->checked  = true; // We use this to show a green icon for success
 
             $toolbar = $this->_owApp->toolbar;
-    		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
-    		        ->appendButton(OntoWiki_Toolbar::CANCEL, array('name' => 'Cancel', 'class' => 'openidreg-cancel'));
-    		$this->view->placeholder('main.window.toolbar')->set($toolbar);
+            $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
+                    ->appendButton(OntoWiki_Toolbar::CANCEL, array('name' => 'Cancel', 'class' => 'openidreg-cancel'));
+            $this->view->placeholder('main.window.toolbar')->set($toolbar);
         } else {
             // No post and get data... This is the initial form...
             $this->view->openid        = '';
@@ -485,9 +486,9 @@ class ApplicationController extends OntoWiki_Controller_Base
             $this->view->step          = 1;
 
             $toolbar = $this->_owApp->toolbar;
-    		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Check OpenID'))
-    		        ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
-    		$this->view->placeholder('main.window.toolbar')->set($toolbar);
+            $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Check OpenID'))
+                    ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
+            $this->view->placeholder('main.window.toolbar')->set($toolbar);
         }
     }
 
@@ -500,9 +501,9 @@ class ApplicationController extends OntoWiki_Controller_Base
 
         $this->view->placeholder('main.window.title')->set('Register User with FOAF+SSL');
         $this->view->formActionUrl = $this->_config->urlBase . 'application/webidreg';
-		$this->view->formMethod    = 'post';
-		$this->view->formClass     = 'simple-input input-justify-left';
-		$this->view->formName      = 'registeruser';
+        $this->view->formMethod    = 'post';
+        $this->view->formClass     = 'simple-input input-justify-left';
+        $this->view->formName      = 'registeruser';
 
         // Fetch POST and GET of the request. One of them or both will be empty.
         $post = $this->_request->getPost();
@@ -565,8 +566,8 @@ class ApplicationController extends OntoWiki_Controller_Base
                     }
 
                     $toolbar = $this->_owApp->toolbar;
-            		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register'));
-            		$this->view->placeholder('main.window.toolbar')->set($toolbar);
+                    $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register'));
+                    $this->view->placeholder('main.window.toolbar')->set($toolbar);
 
                     return;
                 } else {
@@ -695,18 +696,18 @@ class ApplicationController extends OntoWiki_Controller_Base
         $username = $user->getUsername();
 
         $this->view->formActionUrl = $this->_config->urlBase . 'application/preferences';
-		$this->view->formMethod    = 'post';
-		$this->view->formClass     = 'simple-input input-justify-left';
-		$this->view->formName      = 'registeruser';
+        $this->view->formMethod    = 'post';
+        $this->view->formClass     = 'simple-input input-justify-left';
+        $this->view->formName      = 'registeruser';
         $this->view->username      = $username;
         $this->view->userReadonly  = $usernameReadonly;
         $this->view->email         = $email;
         $this->view->submitText    = 'Save Changes';
 
         $toolbar = $this->_owApp->toolbar;
-		$toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Save Changes', 'id' => 'registeruser'))
-		        ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
-		$this->view->placeholder('main.window.toolbar')->set($toolbar);
+        $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Save Changes', 'id' => 'registeruser'))
+                ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
+        $this->view->placeholder('main.window.toolbar')->set($toolbar);
 
         OntoWiki_Navigation::disableNavigation();
 
