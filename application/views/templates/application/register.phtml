@@ -30,6 +30,38 @@
         <input class="text" id="pw2-input" type="password" name="password2" />
         <br class="clearall" />
     </div>
+    <div style="display:<?php if ($this->currentUser == 'Admin') { echo 'block';} else echo 'None'; ?>"">
+	<br class="clearall" />
+        <label for="name-input"><?php echo $this->_('I am') ?></label>
+        <input id="usertype1" name="usertype" type="radio"  title="Agent" style="width:4%; height:30px;" checked value="Agent" /><label style="width:15%; height:30px; text-align:left">Agent</label>
+		<input id="usertype1" name="usertype" type="radio"  title="Datatype" style="width:4%; height:30px " value="Data source" /><label style="width:15%; height:30px; text-align:left">Data source</label>
+    </div>
+	<div>
+		<br class="clearall" />
+        <label for="name-input"><?php echo $this->_('Real Name') ?></label>
+        <input class="text" id="name-input" type="text" name="realname"  value="<?php echo $this->realName ?>" />
+        <br class="clearall" />
+    </div>
+	<div>
+        <label for="name-input"><?php echo $this->_('Institutional Affiliation') ?></label>
+        <input class="text" id="name-input" type="text" name="orgAffiliation" value="<?php echo $this->orgAffiliation ?>" />
+        <br class="clearall" />
+    </div>
+	<div>
+        <label for="name-input"><?php echo $this->_('Additional Profile Information') ?></label>
+        <textarea  style="font-size: 1em;
+							line-height: 1.5;
+							min-height: 5.5em;
+							min-width: 13em;
+							padding: 0; width:40.4%" 
+				rows="2" cols="20"  name="notes" title ="e.g., specialties or interests"><?php echo $this->notes ?></textarea>
+      
+    </div>
+	<div>
+        <label for="name-input"><?php echo $this->_('Website') ?></label>
+        <input title="individual or institutional" class="text" id="name-input" type="text" name="website" value="<?php echo $this->website ?>" />
+        <br class="clearall" />
+    </div>
     
     <!-- UDFR - Abhi - Captcha Additional requirement -->
     <div>

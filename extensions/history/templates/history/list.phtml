@@ -33,7 +33,12 @@
             <label for="actionid-<?php echo $abschnitt['id']; ?>"><?php echo $abschnitt['id']; ?></label>
         </td>
         <?php if(!$this->singleResource){?><td><a href="<?php echo $abschnitt['url']; ?>"><?php echo $this->titleHelper->getTitle($abschnitt['resource']); ?></a></td><?php } ?>
-        <td><?php echo $this->userArray[$abschnitt['useruri']]; ?></td>
+        <!--UDFR - Abhi - User Profile task requirement-->
+		<td class="user-detail">
+		<?php $url= $this->url ; $useruri = $this->userArray[$abschnitt['useruri']]; if($useruri != "Anonymous") { if($useruri != "Admin") {
+		echo '<a title="Click to open profile" href="javascript:callme(' . '\'' . $this->userArray[$abschnitt['useruri']]. '\' , \''.$url .  '\''.');">' .$this->userArray[$abschnitt['useruri']].' </a>';
+		} else { echo $this->userArray[$abschnitt['useruri']]; } } else { echo $this->userArray[$abschnitt['useruri']]; } ?>
+		</td>
         <td>
             <?php $timestamp = date('c', (int) $abschnitt['tstamp']); ?>
             <?php echo OntoWiki_Utils::dateDifference($timestamp) . ' ('.substr($timestamp,0,strlen($timestamp) - 6).')'; ?>
@@ -66,4 +71,68 @@
             event.stopPropagation();
         });
     });
+	
+	//UDFR - Abhi - User Profile task requirements
+	function callme(username, url) {
+		var height = $(document).height();
+        var width = $(document).width();
+		$('#userdetail-popup').remove();
+		$('body').append('<div id="back-overlay" class="back-overlay"></div>');
+		$('body').append('<div id="userdetail-popup" class="userdetail" ></div>');
+		$('body').append('<div id="close-button" style="z-index:100001; top:178px; left:874px; position:absolute;"><img src="'+url+'extensions/themes/silverblue/images/close_button.png" width="35px" height="35px"alt="X Close X" onclick="close_all()" title="Close"border="0" /></div>');
+		$('#userdetail-popup').css("top", 200);
+		$('#userdetail-popup').css("left", 473);
+		$('#back-overlay').css("height", height);
+		$('#back-overlay').css("width", width);
+		var model = 'http://www.udfr.org/profile/';
+		var query = "SELECT * WHERE {<"+model+username+"> ?p ?o}&default-graph-uri="+model;
+  
+		// Fires the ajax request
+		$.ajax({
+			type: "POST",
+			url: 'http://localhost/OntoWiki_Git' + '/sparql?query=' + query,
+			cache: false,
+			dataType: 'json', 
+			success: function(data) {
+				$('#userdetail-popup').css("background-image","none");
+				if (data && data['results'] && data['results']['bindings']) {
+                    var bindings  = data['results']['bindings'];
+					var max = bindings.length;
+					if (max > 0) {
+					for (var i = 0; i < max; i++) {
+						if ( bindings[i].p.value == "http://www.udfr.org/profile/name") {
+							$('#userdetail-popup').append('<p><b>Name &nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
+						} 
+					} 
+					for (var i = 0; i < max; i++) {
+						if ( bindings[i].p.value == "http://www.udfr.org/profile/orgAffiliation") {
+							$('#userdetail-popup').append('<p><b>Institute :  </b>'+bindings[i].o.value+'</p>');
+						}
+					}	
+					for (var i = 0; i < max; i++) { 
+						if ( bindings[i].p.value == "http://www.udfr.org/profile/website") {
+							$('#userdetail-popup').append('<p><b>Website   :  </b> '+bindings[i].o.value+'</p>');
+						}
+					}
+					for (var i = 0; i < max; i++) { 
+						if (bindings[i].p.value == "http://www.udfr.org/profile/notes") {
+							$('#userdetail-popup').append('<p><b>Notes &nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
+						}
+					}
+					$('#userdetail-popup').children('p').css("margin", 10);
+					
+					} else { 
+						$('#userdetail-popup').append('<p> Profile could not find... </p>');
+						$('#userdetail-popup').children('p').css("margin", 40);
+					}
+				}
+			}
+		});
+	}
+	function close_all () {
+		$('#userdetail-popup').remove();
+		$('#back-overlay').remove();
+		$('#close-button').remove();
+	}
+
 </script>

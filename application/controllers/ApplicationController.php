@@ -189,7 +189,14 @@ class ApplicationController extends OntoWiki_Controller_Base
         $this->view->readonly      = '';
         $this->view->email         = '';
 		$this->view->url           = $this->_config->staticUrlBase; // UDFR - Abhi - base url for view
-
+		$this->view->realName	   = '';
+		$this->view->orgAffiliation= '';
+		$this->view->notes	   	   = '';
+		$this->view->website	   = '';
+		$user                      = $this->_owApp->getUser();
+        $currentUser               = $user->getUsername();
+		$this->view->currentUser   = $currentUser;
+		//var_dump($currentUser); exit;
         $toolbar = $this->_owApp->toolbar;
         $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
                 ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
@@ -229,6 +236,15 @@ class ApplicationController extends OntoWiki_Controller_Base
             $passwordTwo = $post['password2'];
 			$string    	= strtoupper($_SESSION['string']);	// UDFR - Abhi - Captcha 
 	    	$userstring = strtoupper($post['userstring']);	// UDFR - Abhi - Captcha
+			$realName = $post['realname'];
+			$this->view->realName = $realName;
+			$orgAffiliation = $post['orgAffiliation'];
+			$this->view->orgAffiliation = $orgAffiliation;
+			$notes = $post['notes'];
+			$this->view->notes = $notes;
+			$website = $post['website'];
+			$this->view->website = $website;
+			$userType = $post['usertype'];
 
             $emailValidator = new Zend_Validate_EmailAddress();
 
@@ -276,7 +292,17 @@ class ApplicationController extends OntoWiki_Controller_Base
             ) {
                 $message    = 'Password does not match regular expression set in system configuration';
                 $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
-            } 
+            } //UDFR- Abhi - user profile validation
+			else if ($realName == '') {
+				$message    = 'Real Name is required.';
+                $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
+			} else if (strlen($realName) < 3) {
+                $message    = 'Real Name -- minimum 3 character required.';
+                $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
+            } else if ($orgAffiliation == '') {
+				$message    = 'Institutional Affiliation is required.';
+                $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
+			}
 			// UDFR - Abhi - Captcha validation
             else if ($string !== $userstring) {
 				$message    = 'Challenge String does not match';
@@ -289,6 +315,18 @@ class ApplicationController extends OntoWiki_Controller_Base
                 // add new user
                 if ($this->_erfurt->addUser($username, $password, $email, $group)) {
                     $message = 'The user "' . $username . '" has been successfully registered.';
+                    $this->_owApp->appendMessage(
+                        new OntoWiki_Message($message, OntoWiki_Message::SUCCESS)
+                    );
+                } else {
+                    $message = 'A registration error occured. Please refer to the log entries.';
+                    $this->_owApp->appendMessage(
+                        new OntoWiki_Message($message, OntoWiki_Message::ERROR)
+                    );
+                }
+				//UDFR - Abhi - add new user profile
+				if ($this->_erfurt->addUserProfile($username, $realName, $orgAffiliation, $notes, $website, $userType)) {
+                    $message = 'The user "' . $username . '" has been successfully registered in user profile model.';
                     $this->_owApp->appendMessage(
                         new OntoWiki_Message($message, OntoWiki_Message::SUCCESS)
                     );

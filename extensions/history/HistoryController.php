@@ -185,7 +185,7 @@ class HistoryController extends OntoWiki_Controller_Component
         $ac          = $this->_erfurt->getAc();
         $params      = $this->_request->getParams();
         $limit       = 20;
-        
+        $this->view->url = $this->_config->staticUrlBase; // UDFR - Abhi
         $rUriEncoded = urlencode((string)$resource);
         $mUriEncoded = urlencode((string)$model);
         $feedUrl = $this->_config->urlBase . "history/feed?r=$rUriEncoded&mUriEncoded";

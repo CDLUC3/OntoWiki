@@ -2154,3 +2154,18 @@ a.open:hover {
     display: none;
 }
 
+.back-overlay {
+    display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 110%;
+	background-color: rgba(255, 255, 255, 0.75);
+	z-index:1001;
+	
+}
+.userdetail { border: 2px solid #666666;
+    box-shadow: 0.2em 0.5em 2.5em #000000;
+	z-index: 1000011; margin:5px; position:absolute; display:block; width:400px; overflow: auto; min-height: 100px; background-color: #F8F8F8; background-image:url('../images/spinner.gif'); background-repeat:no-repeat; background-position:center;   
+}
