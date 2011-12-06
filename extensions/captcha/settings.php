@@ -34,20 +34,20 @@ $failure = "failure.html";
 // A value between 0 and 100 describing how much color overlap
 // there is between text and other objects.  Lower is more
 // secure against bots, but also harder to read.
-$contrast = 50;
+$contrast = 90;
 
 // Various obfuscation techniques.
-$num_polygons = 3; // Number of triangles to draw.  0 = none
+$num_polygons = 2; // Number of triangles to draw.  0 = none
 $num_ellipses = 0;  // Number of ellipses to draw.  0 = none
-$num_lines = 3;  // Number of lines to draw.  0 = none
+$num_lines = 1;  // Number of lines to draw.  0 = none
 $num_dots = 0;  // Number of dots to draw.  0 = none
 
-$min_thickness = 2;  // Minimum thickness in pixels of lines
-$max_thickness = 8;  // Maximum thickness in pixles of lines
+$min_thickness = 1;  // Minimum thickness in pixels of lines
+$max_thickness = 2;  // Maximum thickness in pixles of lines
 $min_radius = 5;  // Minimum radius in pixels of ellipses
-$max_radius = 15;  // Maximum radius in pixels of ellipses
+$max_radius = 9;  // Maximum radius in pixels of ellipses
 
 // How opaque should the obscuring objects be. 0 is opaque, 127
 // is transparent.
-$object_alpha = 75;
+$object_alpha = 127;
 ?>

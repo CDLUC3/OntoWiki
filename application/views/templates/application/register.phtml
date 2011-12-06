@@ -54,7 +54,7 @@
 							min-height: 5.5em;
 							min-width: 13em;
 							padding: 0; width:40.4%" 
-				rows="2" cols="20"  name="notes" title ="e.g., specialties or interests"><?php echo $this->notes ?></textarea>
+				rows="2" cols="20"  name="notes" title ="e.g., specialties or interests" maxlength="2000"><?php echo $this->notes ?></textarea>
       
     </div>
 	<div>
@@ -65,14 +65,15 @@
     
     <!-- UDFR - Abhi - Captcha Additional requirement -->
     <div>
-		<br><img id="siimage" style="width:140px; height:40px; " src="<?php echo $this->url ?>extensions/captcha/imagebuilder.php"></img>	
-		<a tabindex="-1" style="border-style: none;" href="#" title="Refresh Image" 
-	   		onclick="document.getElementById('siimage').src = '<?php echo $this->url ?>extensions/captcha/imagebuilder.php?' + Math.random(); return false;">
-	   	<img src="<?php echo $this->url ?>extensions/themes/silverblue/images/refresh.png" alt="Reload Image" onclick="this.blur()" align="bottom" border="0" />
-		</a>
+		
 		<label for="captcha-input"><?php echo $this->_('Type the code shown')?></label>
 		<input class="text" id="captcha-input" MAXLENGTH=8 SIZE=8 name="userstring" type="text" value="">
-		<br class="clearall" />
+		<br>
+		<div style="position:relative; margin-left:27%"><img id="siimage" src="<?php echo $this->url ?>extensions/captcha/securimage_show.php"></img>	
+		<a tabindex="-1" style="border-style: none;" href="#" title="Refresh Image" 
+	   		onclick="document.getElementById('siimage').src = '<?php echo $this->url ?>extensions/captcha/securimage_show.php?' + Math.random(); return false;">
+	   	<img src="<?php echo $this->url ?>extensions/themes/silverblue/images/refresh.png" alt="Reload Image" onclick="this.blur()" align="bottom" border="0" />
+		</a></div>
     </div> <!-- Abhi -->
     <div class="clearall"></div>
 </fieldset>

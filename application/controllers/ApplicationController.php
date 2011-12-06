@@ -234,7 +234,7 @@ class ApplicationController extends OntoWiki_Controller_Base
             $this->view->username = $username;
             $password    = $post['password'];
             $passwordTwo = $post['password2'];
-			$string    	= strtoupper($_SESSION['string']);	// UDFR - Abhi - Captcha 
+			$string    	= strtoupper($_SESSION['securimage_code_value']);	// UDFR - Abhi - Captcha 
 	    	$userstring = strtoupper($post['userstring']);	// UDFR - Abhi - Captcha
 			$realName = $post['realname'];
 			$this->view->realName = $realName;
@@ -851,7 +851,7 @@ class ApplicationController extends OntoWiki_Controller_Base
         if (!$error) {
 
             // try sparql query pre search check (with limit to 1)
-            $elements = $store->getSearchPattern($searchText, $modelUri);
+            $elements = $store->getSearchPattern($searchText, $modelUri);  var_dump($elements); exit;//var_dump($modelUri);
             $query = new Erfurt_Sparql_Query2();
             $query->addElements($elements);
             $query->setLimit(1);

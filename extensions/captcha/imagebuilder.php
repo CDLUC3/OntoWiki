@@ -31,11 +31,11 @@ $max_radius *= 2;
 $contrast = 255 * ($contrast / 100.0);
 $o_contrast = 1.3 * $contrast;
 
-$width = 15 * imagefontwidth (5);
-$height = 2.5 * imagefontheight (5);
+$width = 15 * imagefontwidth (15);
+$height = 2.5 * imagefontheight (15);
 $image = imagecreatetruecolor ($width, $height);
 imagealphablending($image, true);
-$black = imagecolorallocatealpha($image,0,0,0,0);
+$black = imagecolorallocatealpha($image,255,255,255,80);
 
 // Build the  validation string
 $max = strlen($acceptedChars)-1;
