@@ -537,7 +537,7 @@ class Securimage {
         $this->use_wordlist  = false;
 
         $this->gd_font_file  = 'gdfonts/automatic.gdf';
-        $this->use_gd_font   = false;
+        $this->use_gd_font   = true;
         $this->gd_font_size  = 24;
         $this->text_x_start  = 15;
 
