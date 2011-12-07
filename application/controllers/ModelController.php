@@ -662,7 +662,7 @@ class ModelController extends OntoWiki_Controller_Base
     
     public function deleteAction()
     {
-        $model = $this->_request->model;
+        $model = $this->_request->m;
         if ($this->_erfurt->isActionAllowed('ModelManagement')) {
             $event = new Erfurt_Event('onPreDeleteModel');
             $event->modelUri = $model;
@@ -952,5 +952,4 @@ class ModelController extends OntoWiki_Controller_Base
         $graph->updateWithMutualDifference($originalStatements, $modifiedStatements);
     }
 }
-
 
