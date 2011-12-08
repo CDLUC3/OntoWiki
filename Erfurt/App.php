@@ -457,7 +457,6 @@ class Erfurt_App
         
         return $this->_acModel1;
     } 
-	
 	/** UDFR - Abhi - User Profile task
      * Adds new user profile in model to the store.
      * 
