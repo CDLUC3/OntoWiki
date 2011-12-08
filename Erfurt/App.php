@@ -65,7 +65,7 @@ class Erfurt_App
      * @var Erfurt_Rdf_Model 
      */
     private $_acModel = null;
-    
+    private $_acModel1 = null;
     /**
      * Contains a reference to Zend_Auth singleton.
      */
