@@ -66,6 +66,8 @@ class Erfurt_Versioning
         $eventDispatcher->register('onAddMultipleStatements', $this);
         $eventDispatcher->register('onDeleteMatchingStatements', $this);
         $eventDispatcher->register('onDeleteMultipleStatements', $this);
+		//*** UDFR- Abhi- Registering event for Reviewer Action
+		$eventDispatcher->register('onReviewStatement', $this);
     }
     
     /**
@@ -253,7 +255,7 @@ class Erfurt_Versioning
                'FROM ef_versioning_actions WHERE
                 model = \'' . $graphUri . '\' AND ( resource = \'' . implode ('\' OR resource = \'' ,$resources) . '\' )
                 AND parent IS NULL
-                ORDER BY tstamp DESC';
+                ORDER BY id DESC';					// ORDER BY tstamp DESC - Abhi - For rendering histories in descending order by 'id'
         
         $result = $this->_sqlQuery(
             $sql, 
@@ -361,6 +363,29 @@ class Erfurt_Versioning
         }
     }
     
+	//UDFR- Abhi- Additional Event for Review Action
+    public function onReviewStatement(Erfurt_Event $event)
+    {
+        $this->_checkSetup();
+
+        if ($this->isVersioningEnabled() && is_array($event->statement)) {
+
+            $payload = array (
+                $event->statement['subject'] => array (
+                    $event->statement['predicate'] => array (
+                        $event->statement['object']
+                    )
+                 )
+            );
+
+            $payloadId = $this->_execAddPayload($payload);
+            $resource = $event->statement['subject'];
+            $this->_execAddAction($event->graphUri, $resource, 24, $payloadId);
+        } else {
+            // do nothing
+        }
+    }
+	
     public function onAddMultipleStatements(Erfurt_Event $event)
     {
         $this->_checkSetup();
