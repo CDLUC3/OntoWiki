@@ -82,6 +82,15 @@ class ErrorController extends Zend_Controller_Action
         // we provide a complete page
         $this->_helper->layout()->disableLayout();
     }
+	
+	// UDFR - Abhi - new test action for NOID
+	public function testAction(){
+	exec('noid u1f.mint 1', $retval);
+	if ($retval) {
+		echo $retval[0];
+	} else echo "No result found";
+	$this->_helper->layout()->disableLayout();
+	}
 }
 
 

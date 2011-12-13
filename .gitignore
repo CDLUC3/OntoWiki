@@ -1,13 +1,20 @@
+<<<<<<< HEAD
 syntax: glob
 
 extensions/*.ini
 local.ini
 ./debian
+=======
+*.log
+local.ini
+config.ini
+>>>>>>> c54d3b586ca08226e477c8a0533eb7a8c04d30db
 .settings
 .project
 .idea
 .buildpath
 .DS_Store
+<<<<<<< HEAD
 *.log
 config.ini
 nbproject
@@ -17,3 +24,7 @@ libraries/Zend
 libraries/ZendFramework-1.*
 BlogPost
 extensions/dssn/libraries/lib-dssn-php
+=======
+.htaccess
+nbproject
+>>>>>>> c54d3b586ca08226e477c8a0533eb7a8c04d30db

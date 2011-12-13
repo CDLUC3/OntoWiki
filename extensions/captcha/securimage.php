@@ -546,7 +546,7 @@ class Securimage {
         $this->perturbation       = 0.75;
         $this->iscale             = 5;
         $this->text_angle_minimum = 0;
-        $this->text_angle_maximum = 0;
+        $this->text_angle_maximum = 45;
 
         $this->image_bg_color   = new Securimage_Color(0xff, 0xff, 0xff);
         $this->text_color       = new Securimage_Color(0x3d, 0x3d, 0x3d);
@@ -557,15 +557,15 @@ class Securimage {
                                         new Securimage_Color(0x0, 0x60, 0xCC));
         $this->use_multi_text   = false;
 
-        $this->use_transparent_text         = false;
+        $this->use_transparent_text         = true;
         $this->text_transparency_percentage = 30;
 
         $this->num_lines            = 10;
         $this->line_color           = new Securimage_Color(0x3d, 0x3d, 0x3d);
-        $this->draw_lines_over_text = true;
+        $this->draw_lines_over_text = false;
 
         $this->image_signature = '';
-        $this->signature_color = new Securimage_Color(0x20, 0x50, 0xCC);
+        $this->signature_color = new Securimage_Color("#00CC33");
         $this->signature_font  = $this->basepath . '/AHGBold.ttf';
 
         $this->audio_path   = $this->basepath . '/audio/';
