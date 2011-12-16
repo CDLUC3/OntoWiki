@@ -68,14 +68,14 @@ class AttachmentModule extends OntoWiki_Module
     private function _checkClass()
     {
         $resource = $this->_owApp->selectedResource;
-        $rModel   = $resource->getMemoryModel();
+        //$rModel   = $resource->getMemoryModel();  // UDFR - Abhi - Bug fix "Fatal error: Call to undefined method OntoWiki_Resource::getMemoryModel()"
 
         // no configured value means, show always
         if (count($this->_typeExpressions) == 0) {
             return true;
         }
 
-        // search with each expression using the preg matchtype
+        /* search with each expression using the preg matchtype
         foreach ($this->_typeExpressions as $typeExpression) {
             if (
                 $rModel->hasSPvalue(
@@ -87,7 +87,7 @@ class AttachmentModule extends OntoWiki_Module
             ) {
                 return true;
             }
-        }
+        }*/
 
         // type does not match to one of the expressions
         return false;
