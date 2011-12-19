@@ -11,7 +11,7 @@
  * @license    
  * @version    
  */
-class NoidController extends OntoWiki_Controller_Base
+class NoidController extends Zend_Controller_Action
 {
 	public function u1fAction(){
 		exec('noid u1f.mint 1', $retval);
