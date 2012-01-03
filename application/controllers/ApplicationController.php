@@ -188,6 +188,7 @@ class ApplicationController extends OntoWiki_Controller_Base
         $this->view->username      = '';
         $this->view->readonly      = '';
         $this->view->email         = '';
+
 		$this->view->url           = $this->_config->staticUrlBase; // UDFR - Abhi - base url for view
 		$this->view->realName	   = '';
 		$this->view->orgAffiliation= '';
@@ -197,6 +198,7 @@ class ApplicationController extends OntoWiki_Controller_Base
         $currentUser               = $user->getUsername();
 		$this->view->currentUser   = $currentUser;
 		//var_dump($currentUser); exit;
+
         $toolbar = $this->_owApp->toolbar;
         $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))
                 ->appendButton(OntoWiki_Toolbar::RESET, array('name' => 'Reset Form'));
