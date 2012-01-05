@@ -17,6 +17,7 @@ class NoidController extends Zend_Controller_Action
 		exec('noid u1f.mint 1', $retval);
 		if ($retval) {
 			echo $retval[0];
+			return $retval[0];
 		} else echo "No result found";
 		
 		$this->_helper->layout()->disableLayout();
@@ -26,6 +27,7 @@ class NoidController extends Zend_Controller_Action
 		exec('noid u1r.mint 1', $retval);
 		if ($retval) {
 			echo $retval[0];
+			return $retval[0];
 		} else echo "No result found";
 		
 		$this->_helper->layout()->disableLayout();
