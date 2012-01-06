@@ -712,7 +712,7 @@ ul.inline.separated li, ol.inline.separated li
 }
 ul.inline.separated li:after, ol.inline.separated li:after
 {
-    content:" â€¢ ";
+    content:" - ";
     color:#ccc;
 }
 ul.inline.separated li:last-child:after, ol.inline.separated li:last-child:after,
