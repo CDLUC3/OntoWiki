@@ -32,6 +32,28 @@ class NoidController extends Zend_Controller_Action
 		
 		$this->_helper->layout()->disableLayout();
 	}
+	
+	public function testAction() {
+		$fp = fsockopen("udfr-dev.cdlib.org", 8089, $errno, $errstr, 30);
+
+		if (!$fp) {
+			echo "$errstr ($errno)<br />\n";
+		} else {
+			$out = "GET http://udfr-dev.cdlib.org/noid/u1r HTTP/1.0\r\n";
+			$out .= "Host: udfr-dev.cdlib.org\r\n";
+			$out .= "Connection: Close\r\n\r\n";
+			fwrite($fp, $out);
+			//echo fgets($fp, 128);
+			$noid = array();
+			while (!feof($fp)) {
+				$noid = fgets($fp, 128); 				
+			}
+			fclose($fp);
+		}
+		$noid = trim($noid); 
+		echo $noid; 
+		$this->_helper->layout()->disableLayout();
+	}
 }
 ?>
 	
