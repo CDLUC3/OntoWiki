@@ -191,6 +191,7 @@ class ApplicationController extends OntoWiki_Controller_Base
 
 		$this->view->url           = $this->_config->staticUrlBase; // UDFR - Abhi - base url for view
 		$this->view->realName	   = '';
+		$this->view->jobTitle	   = '';
 		$this->view->orgAffiliation= '';
 		$this->view->notes	   	   = '';
 		$this->view->website	   = '';
@@ -240,15 +241,19 @@ class ApplicationController extends OntoWiki_Controller_Base
 	    	$userstring = strtoupper($post['userstring']);	// UDFR - Abhi - Captcha
 			$realName = $post['realname'];
 			$this->view->realName = $realName;
+			$jobTitle = $post['jobTitle'];
+			$this->view->jobTitle = $jobTitle;
 			$orgAffiliation = $post['orgAffiliation'];
 			$this->view->orgAffiliation = $orgAffiliation;
 			$notes = $post['notes'];
 			$this->view->notes = $notes;
 			$website = $post['website'];
+			preg_match('@^(?:http://)?([^/]+)@i', $website, $matches);
+			$website = $matches[1];
 			$this->view->website = $website;
 			$userType = $post['usertype'];
-
-            $emailValidator = new Zend_Validate_EmailAddress();
+			
+			$emailValidator = new Zend_Validate_EmailAddress();
 
             if (!$this->_erfurt->isActionAllowed('RegisterNewUser') or
                 !($actionConfig = $this->_erfurt->getActionConfig('RegisterNewUser'))) {
@@ -301,7 +306,10 @@ class ApplicationController extends OntoWiki_Controller_Base
 			} else if (strlen($realName) < 3) {
                 $message    = 'Real Name -- minimum 3 character required.';
                 $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
-            } else if ($orgAffiliation == '') {
+            } else if ($jobTitle == '') {
+				$message    = 'Job tiltle is required.';
+                $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
+			} else if ($orgAffiliation == '') {
 				$message    = 'Institutional Affiliation is required.';
                 $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
 			}
@@ -327,7 +335,7 @@ class ApplicationController extends OntoWiki_Controller_Base
                     );
                 }
 				//UDFR - Abhi - add new user profile
-				if ($this->_erfurt->addUserProfile($username, $realName, $orgAffiliation, $notes, $website, $userType)) {
+				if ($this->_erfurt->addUserProfile($username, $realName, $jobTitle, $orgAffiliation, $notes, $website, $userType)) {
                     $message = 'The user "' . $username . '" has been successfully registered in user profile model.';
                     $this->_owApp->appendMessage(
                         new OntoWiki_Message($message, OntoWiki_Message::SUCCESS)

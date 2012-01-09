@@ -11,22 +11,22 @@
 ?>
 <fieldset>
     <div>
-        <label for="name-input"><?php echo $this->_('Username') ?></label>
+        <label for="name-input" title="User name (visible to all users via the History tab)"><?php echo $this->_('Username') ?><span style="color:red">*</span></label>
         <input class="text" id="name-input" type="text" name="username" <?php echo $this->readonly ?> value="<?php echo $this->username ?>" />
         <br class="clearall" />
     </div>
     <div>
-        <label for="email-input"><?php echo $this->_('Email Address') ?></label>
+        <label for="email-input" title="Email address (visible to UDFR administrators only)"><?php echo $this->_('Email Address') ?><span style="color:red">*</span></label>
         <input class="text" id="email-input" type="text" name="email" value="<?php echo $this->email ?>" />
         <br class="clearall" />
     </div>
     <div>
-        <label for="pw1-input"><?php echo $this->_('Password') ?></label>
+        <label for="pw1-input" title="Password, minimum of 5 characters (no visibility to anyone)"><?php echo $this->_('Password') ?><span style="color:red">*</span></label>
         <input class="text" id="pw1-input" type="password" name="password" />
         <br class="clearall" />
     </div>
     <div>
-        <label for="pw2-input"><?php echo $this->_('Password (repeat)') ?></label>
+        <label for="pw2-input"><?php echo $this->_('Password (repeat)') ?><span style="color:red">*</span></label>
         <input class="text" id="pw2-input" type="password" name="password2" />
         <br class="clearall" />
     </div>
@@ -38,17 +38,24 @@
     </div>
 	<div>
 		<br class="clearall" />
-        <label for="name-input"><?php echo $this->_('Real Name') ?></label>
+        <label for="name-input" title="Full name (visible to all users via the History tab)" ><?php echo $this->_('Full Name') ?><span style="color:red">*</span></label>
         <input class="text" id="name-input" type="text" name="realname"  value="<?php echo $this->realName ?>" />
         <br class="clearall" />
     </div>
 	<div>
-        <label for="name-input"><?php echo $this->_('Institutional Affiliation') ?></label>
+        <label for="name-input" title="Job title (visible to all users via the History tab)" ><?php echo $this->_('Title') ?><span style="color:red">*</span></label>
+        <input class="text" id="name-input" type="text" name="jobTitle" value="<?php echo $this->jobTitle ?>" />
+        <br class="clearall" />
+    </div>
+	<div>
+        <label for="name-input" title="Institutional affiliation (visible to all users via the History tab)" ><?php echo $this->_('Institutional Affiliation') ?><span style="color:red">*</span></label>
         <input class="text" id="name-input" type="text" name="orgAffiliation" value="<?php echo $this->orgAffiliation ?>" />
         <br class="clearall" />
     </div>
 	<div>
-        <label for="name-input"><?php echo $this->_('Additional Profile Information') ?></label>
+        <label for="name-input" title="Additional information, e.g., job specialty or expertise (visible to all users via the History tab)">
+			<?php echo $this->_('Additional Profile Information') ?>
+		</label>
         <textarea  style="font-size: 1em;
 							line-height: 1.5;
 							min-height: 5.5em;
@@ -58,7 +65,7 @@
       
     </div>
 	<div>
-        <label for="name-input"><?php echo $this->_('Website') ?></label>
+        <label for="name-input" title="Personal or institutional website (visible to all users via the History tab)"><?php echo $this->_('Website') ?></label>
         <input title="individual or institutional" class="text" id="name-input" type="text" name="website" value="<?php echo $this->website ?>" />
         <br class="clearall" />
     </div>
@@ -66,7 +73,7 @@
     <!-- UDFR - Abhi - Captcha Additional requirement -->
     <div>
 		
-		<label for="captcha-input"><?php echo $this->_('Type the code shown')?></label>
+		<label for="captcha-input"><?php echo $this->_('Type the code shown')?><span style="color:red">*</span></label>
 		<input class="text" id="captcha-input" MAXLENGTH=8 SIZE=8 name="userstring" type="text" value="">
 		<br>
 		<div style="position:relative; margin-left:27%"><img id="siimage" src="<?php echo $this->url ?>extensions/captcha/securimage_show.php"></img>	

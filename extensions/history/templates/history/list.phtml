@@ -79,7 +79,7 @@
 		$('#userdetail-popup').remove();
 		$('body').append('<div id="back-overlay" class="back-overlay"></div>');
 		$('body').append('<div id="userdetail-popup" class="userdetail" ></div>');
-		$('body').append('<div id="close-button" style="z-index:100001; top:178px; left:874px; position:absolute;"><img src="'+url+'extensions/themes/silverblue/images/close_button.png" width="35px" height="35px"alt="X Close X" onclick="close_all()" title="Close"border="0" /></div>');
+		$('body').append('<div id="close-button" style="z-index:1000100; top:190px; left:862px; position:absolute;"><img src="'+url+'extensions/themes/silverblue/images/close_button.png" width="35px" height="35px"alt="X Close X" onclick="close_all()" title="Close"border="0" /></div>');
 		$('#userdetail-popup').css("top", 200);
 		$('#userdetail-popup').css("left", 473);
 		$('#back-overlay').css("height", height);
@@ -100,23 +100,28 @@
 					var max = bindings.length;
 					if (max > 0) {
 					for (var i = 0; i < max; i++) {
-						if ( bindings[i].p.value == "http://www.udfr.org/profile/name") {
-							$('#userdetail-popup').append('<p><b>Name &nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
+						if ( bindings[i].p.value == "http://www.udfr.org/profile/userName") {
+							$('#userdetail-popup').append('<p><b>Username :  </b> '+bindings[i].o.value+'</p>');
 						} 
 					} 
 					for (var i = 0; i < max; i++) {
+						if ( bindings[i].p.value == "http://www.udfr.org/profile/jobTitle") {
+							$('#userdetail-popup').append('<p><b>Title &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:  </b>'+bindings[i].o.value+'</p>');
+						}
+					}
+					for (var i = 0; i < max; i++) {
 						if ( bindings[i].p.value == "http://www.udfr.org/profile/orgAffiliation") {
-							$('#userdetail-popup').append('<p><b>Institute :  </b>'+bindings[i].o.value+'</p>');
+							$('#userdetail-popup').append('<p><b>Affiliation &nbsp:  </b>'+bindings[i].o.value+'</p>');
 						}
 					}	
 					for (var i = 0; i < max; i++) { 
 						if ( bindings[i].p.value == "http://www.udfr.org/profile/website") {
-							$('#userdetail-popup').append('<p><b>Website   :  </b> '+bindings[i].o.value+'</p>');
+							$('#userdetail-popup').append('<p><b>Website &nbsp&nbsp&nbsp&nbsp:  </b> <a onclick=window.open("http://'+bindings[i].o.value+'");>'+bindings[i].o.value+'</a></p>');
 						}
 					}
 					for (var i = 0; i < max; i++) { 
 						if (bindings[i].p.value == "http://www.udfr.org/profile/notes") {
-							$('#userdetail-popup').append('<p><b>Notes &nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
+							$('#userdetail-popup').append('<p><b>Note &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
 						}
 					}
 					$('#userdetail-popup').children('p').css("margin", 10);
@@ -134,5 +139,5 @@
 		$('#back-overlay').remove();
 		$('#close-button').remove();
 	}
-
+	
 </script>
