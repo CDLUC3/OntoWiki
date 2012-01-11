@@ -158,11 +158,12 @@ class ServiceController extends Zend_Controller_Action
         if (!empty($resource)) {
             $models = array_keys($this->_owApp->erfurt->getStore()->getAvailableModels(true));
             $isModel = in_array($resource, $models);
-
-            $menu->prependEntry(
+			
+			// UDFR - ABHI - Menu entry Go to Resource (external) is Commented by UDFR
+            /*$menu->prependEntry(
                 'Go to Resource (external)',
                 (string)$resource
-            );
+            );*/
 
             if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
                 // Delete resource option
@@ -738,7 +739,7 @@ class ServiceController extends Zend_Controller_Action
         }
         
         // insert
-        if ($insertModel && $insertModel->isEditable()) {
+        if ($insertModel && $insertModel->isEditable()) { echo "<br>insert final data is <pre>"; print_r($insert);echo"</pre>"; exit;// ABhi UDFR
             OntoWiki::getInstance()->logger->info(
                         'add Statements: ' . print_r($delete, true)
                     );
@@ -1044,38 +1045,47 @@ class ServiceController extends Zend_Controller_Action
         }
 
         if ($workingMode == 'class') {
-        	//UDFR - Abhi
+        	//UDFR - Abhi - Use different query if the model is not a Ontowiki system config model
         	if ($modelIri != "http://localhost/OntoWiki/Config/") {
-            	$properties = $model->sparqlQuery('
-            	select distinct ?uri
+            	$rawQuery = '
+            	select distinct ?uri ?urilabel
 				where
 				{
-				{?uri <'.EF_RDFS_DOMAIN.'> <'.$parameter.'>.}
+				{?uri <'.EF_RDFS_DOMAIN.'> <'.$parameter.'>.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.}
 				union
 				{?uri <'.EF_RDFS_DOMAIN.'> ?super.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.}
 				union
 				{?uri <'.EF_RDFS_DOMAIN.'> ?s2.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.
 				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.}
 				union
 				{?uri <'.EF_RDFS_DOMAIN.'> ?s3.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
 				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.
 				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
 				union
 				{?uri <'.EF_RDFS_DOMAIN.'> ?s4.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?s3 <'.EF_RDFS_SUBCLASSOF.'> ?s4.
 				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
 				<'.$parameter.'> <'.EF_RDFS_SUBCLASSOF.'> ?super.
 				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
 				?uri <'.EF_RDF_TYPE.'> ?propType.
-				
+
 				OPTIONAL{ ?uri <'.EF_RDFS_RANGE.'>  ?rangeclass.}  
 				}
-				LIMIT 200' , array('result_format' => 'extended'));
-            	//OPTIONAL { ?value <'.EF_RDF_TYPE.'> ?rangeclass.}
-        	}
+				ORDER BY ASC(?urilabel)
+				LIMIT 200' ;
+				
+				require_once 'Erfurt/Sparql/SimpleQuery.php';
+				$query = Erfurt_Sparql_SimpleQuery::initWithString($rawQuery);
+				$properties = $model->sparqlQuery($query, array('result_format' => 'extended'));
+			}
         	else {
         		$properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
                 ?s ?uri ?value.
@@ -1097,24 +1107,29 @@ class ServiceController extends Zend_Controller_Action
                 	<'.$parameter.'> ?uri ?value.
                 	} LIMIT 200 ', array('result_format' => 'extended'));
         	if ($modelIri != "http://localhost/OntoWiki/Config/") {
-        		$properties2 = $model->sparqlQuery('select distinct ?uri
+        		$rawQuery = 'select distinct ?uri ?urilabel
 				where
 				{<'.$parameter.'> <'.EF_RDF_TYPE.'> ?class.
-				{?uri <'.EF_RDFS_DOMAIN.'> ?class.}
+				{?uri <'.EF_RDFS_DOMAIN.'> ?class.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.}
 				UNION
 				{?uri <'.EF_RDFS_DOMAIN.'> ?super.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.}
 				UNION
 				{?uri <'.EF_RDFS_DOMAIN.'> ?s2.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.
 				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.}
 				UNION
 				{?uri <'.EF_RDFS_DOMAIN.'> ?s3.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
 				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.
 				?super <'.EF_RDFS_SUBCLASSOF.'> ?s2.}
 				UNION
 				{?uri <'.EF_RDFS_DOMAIN.'> ?s4.
+				?uri <'.EF_RDFS_LABEL.'> ?urilabel.
 				?s3 <'.EF_RDFS_SUBCLASSOF.'> ?s4.
 				?s2 <'.EF_RDFS_SUBCLASSOF.'> ?s3.
 				?class <'.EF_RDFS_SUBCLASSOF.'> ?super.
@@ -1122,7 +1137,12 @@ class ServiceController extends Zend_Controller_Action
 				?uri <'.EF_RDF_TYPE.'> ?propType.
 				OPTIONAL{ ?uri <'.EF_RDFS_RANGE.'>  ?rangeclass.}  
 				}
-				LIMIT 200', array('result_format' => 'extended'));
+				ORDER BY ASC(?urilabel)
+				LIMIT 200';
+				
+				require_once 'Erfurt/Sparql/SimpleQuery.php';
+				$query = Erfurt_Sparql_SimpleQuery::initWithString($rawQuery);
+				$properties2 = $model->sparqlQuery($query, array('result_format' => 'extended'));
         	}
       	} else { // resource
             $properties = $model->sparqlQuery('SELECT DISTINCT ?uri ?value {
@@ -1136,7 +1156,7 @@ class ServiceController extends Zend_Controller_Action
         $properties = $properties['results']['bindings'];
         
        	/*echo "abhishek-----<pre>";
-            	var_dump($properties2['results']['bindings']); echo '<br>';
+            	var_dump($properties); echo '<br>';
             	//var_dump($properties2); echo '<br>';
         echo "</pre>";
         exit;*/
