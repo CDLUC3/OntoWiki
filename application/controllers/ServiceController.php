@@ -739,7 +739,7 @@ class ServiceController extends Zend_Controller_Action
         }
         
         // insert
-        if ($insertModel && $insertModel->isEditable()) { echo "<br>insert final data is <pre>"; print_r($insert);echo"</pre>"; exit;// ABhi UDFR
+        if ($insertModel && $insertModel->isEditable()) {
             OntoWiki::getInstance()->logger->info(
                         'add Statements: ' . print_r($delete, true)
                     );
