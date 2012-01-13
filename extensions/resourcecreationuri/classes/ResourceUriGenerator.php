@@ -111,7 +111,11 @@ class ResourceUriGenerator {
             $this->_model = $this->erfurt->getStore()->getModel((string) $defaultModel);
         }
     }
-    
+    public function getCurrentModel() {
+        
+		$baseUri = $this->_model->getBaseUri();
+        return $baseUri;
+    }
     /**
      * Function generates nice URIs by certain rules (naming scheme and available resource data)
      * Two modes are possible: live from store namingly 'sparql', or with memory model in rdfphp
@@ -330,16 +334,46 @@ class ResourceUriGenerator {
             }
         
         }
-
+		
+		// UDFR - ABHI - Give a noid id to every newly created instance
+		$checkUri = true;
         $baseUri = $this->_model->getBaseUri();
+		
+		if ($baseUri != 'http://localhost/OntoWiki/Config/' && $baseUri != 'http://www.udfr.org/profile/') {
+			$checkUri = true;
+			$fp = fsockopen($this->_config->noidServer->hostName, $this->_config->noidServer->port, $errno, $errstr, 30);
+
+			if (!$fp) {
+				echo "$errstr ($errno)<br />\n";
+			} else {
+				if($uriParts['type'] == 'File_format' || $uriParts['type'] == 'Encoding' || $uriParts['type'] == 'Compression') {
+					$out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1f. " HTTP/1.0\r\n";
+				} else $out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1r . " HTTP/1.0\r\n";
+				$out .= "Host: ".$this->_config->noidServer->hostName."\r\n";
+				$out .= "Connection: Close\r\n\r\n";
+				fwrite($fp, $out);
+				
+				while (!feof($fp)) {
+					$noid = fgets($fp, 128); 				
+				}
+				
+				fclose($fp);
+			}
+			$noid = trim($noid);
+		} else $checkUri = false;
+		
         $baseUriLastCharacter = $baseUri[ strlen($baseUri) - 1];
         if ( ($baseUriLastCharacter == '/') || ($baseUriLastCharacter == '#') ) {
-            $createdUri = $baseUri . implode('/',$uriParts);
+            if($checkUri) {
+				$createdUri = $baseUri . $noid; 
+			} else $createdUri = $baseUri . implode('/',$uriParts);
         } else {
             // avoid ugly glued uris without separator
-            $createdUri = $baseUri . '/' . implode('/',$uriParts);
+            if($checkUri){
+				$createdUri = $baseUri. '/' .$noid; 
+			} else $createdUri = $baseUri . '/' . $noid;
         }
-        
+        //var_dump($createdUri); exit;
         return $createdUri;
     }
     
@@ -461,5 +495,49 @@ class ResourceUriGenerator {
         
         return $result;
     }
+	
+	/* UDFR - Abhi - getNoid creates a new uri for newly created Triples
+	* Future implementations are : 
+	* 	1. line#477 create a nice error message if fsockopen fails to call Noid server.
+	*	2. create a nice config array to check if $class = '---uri---'
+	
+	public function getNoid ($subjectUri, $class) {
+		$baseUri = $this->_model->getBaseUri();
+		$fp = fsockopen($this->_config->noidServer->hostName, $this->_config->noidServer->port, $errno, $errstr, 30);
+
+			if (!$fp) {
+				echo "$errstr ($errno)<br />\n";
+			} else {
+				if($class == 'http://www.udfr.org/onto/File_format' || $class == 'http://www.udfr.org/onto#File_format' || $class == 'http://www.udfr.org/onto/Encoding' || $class == 'http://www.udfr.org/onto#Encoding' || $class == 'http://www.udfr.org/onto/Compression' || $class == 'http://www.udfr.org/onto#Compression') {
+					$out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1f. " HTTP/1.0\r\n";
+				} else $out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1r . " HTTP/1.0\r\n";
+				$out .= "Host: ".$this->_config->noidServer->hostName."\r\n";
+				$out .= "Connection: Close\r\n\r\n";
+				fwrite($fp, $out);
+				//echo fgets($fp, 128);
+				
+				while (!feof($fp)) {
+					$noid = fgets($fp, 128); 				
+				}
+				//echo $out;
+				fclose($fp);
+			}
+			$noid = trim($noid);
+			
+		 
+		
+		$baseUriLastCharacter = $baseUri[ strlen($baseUri) - 1];
+		if ( ($baseUriLastCharacter == '/') || ($baseUriLastCharacter == '#') ) {
+            
+				$createdUri = $baseUri . $noid; 
+			
+        } else {
+            // avoid ugly glued uris without separator
+           
+				$createdUri = $baseUri. '/' .$noid; 
+			
+        }
+		return $createdUri;
+	}*/
     
 }

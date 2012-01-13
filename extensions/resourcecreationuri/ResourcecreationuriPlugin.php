@@ -64,10 +64,20 @@ class ResourcecreationuriPlugin extends OntoWiki_Plugin
 
             if ( count($event->insertData) == 1 && preg_match($pattern,$subjectUri) ) {
                 $newUri = $gen->generateUri($subjectUri, ResourceUriGenerator::FORMAT_RDFPHP, $this->insertData);
+				
                 $temp   = array();
                 foreach ($this->insertData[$subjectUri] as $p => $o) {
                     $temp[$newUri][$p] = $o;
                 }
+				$baseUri = $gen->getCurrentModel();
+				if ($baseUri != 'http://localhost/OntoWiki/Config/' && $baseUri != 'http://www.udfr.org/profile/') {
+					$len = strlen($newUri)-strlen($baseUri);
+					$noid = substr($newUri, strlen($baseUri), $len);
+					$noidArray = array();
+					$noidArray['type'] = 'literal';
+					$noidArray['value'] = $noid;
+					$temp[$newUri]['http://www.udfr.org/onto/udfrIdentifier'][0] = $noidArray;					
+				}
                 $this->insertData = $temp;
                 $flag = true;
             } else {
