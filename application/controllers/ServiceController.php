@@ -172,11 +172,13 @@ class ServiceController extends Zend_Controller_Action
                     array()
                 );
                 if ($isModel) {
-                    $url->setParam('m',$resource,false);
+                    //$url->setParam('m',$resource,false);  // UDFR - Abhi - NO need for this
+					//$menu->prependEntry( 'Delete Resource', (string) $url ); // UDFR - ABHI - NO need for this
                 }
-                $url->setParam('r',$resource,true);
-                $menu->prependEntry( 'Delete Resource', (string) $url );
-
+				else {
+					$url->setParam('r',$resource,true);
+					$menu->prependEntry( 'Delete Resource', (string) $url );
+				}
                 // edit resource option
                 $menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
             }
