@@ -183,12 +183,12 @@ class ResourceController extends OntoWiki_Controller_Base {
         $toolbar = $this->_owApp->toolbar;
         
         /*UDFR- Abhi- Add 'Save Review' button if Reviewer Action is granted */
-		if ($this->_erfurt->getAc()->isActionAllowed('Reviewer')) {
+		if ($this->_erfurt->getAc()->isActionAllowed('Review')) {
             $this->view->review = true;
             // adding submit button for review-action
 	    	$toolbar->appendButton(
 			OntoWiki_Toolbar::SUBMIT, 
-			array('name' => 'Save Review', 'id' => 'resource-review')
+			array('name' => 'Review', 'id' => 'resource-review')
 			);
 		}
 		else {
