@@ -670,7 +670,9 @@ class ModelController extends OntoWiki_Controller_Base
             
             try {
                 $this->_erfurt->getStore()->deleteModel($model);
-                
+                // UDFR - Abhi - Delete reviews from table ef_reviews where model = $model
+                $this->_erfurt->getStore()->sqlQuery('DELETE FROM ef_reviews WHERE model = \''. addslashes($model) . '\' ');
+				
                 if ((null !== $this->_owApp->selectedModel) && 
                         ($this->_owApp->selectedModel->getModelIri() === $model)) {
                     
