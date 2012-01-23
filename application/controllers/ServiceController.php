@@ -177,7 +177,9 @@ class ServiceController extends Zend_Controller_Action
                 }
 				else {
 					$url->setParam('r',$resource,true);
-					$menu->prependEntry( 'Delete Resource', (string) $url );
+					// UDFR - ABHI - Confirm with user before delete  
+					//$menu->prependEntry( 'Delete Resource', (string) $url );
+					$menu->prependEntry( 'Delete Resource', 'javascript:deleteResource(\''.(string) $resource.'\')' );
 				}
                 // edit resource option
                 $menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');

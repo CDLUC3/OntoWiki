@@ -600,12 +600,26 @@ function addProperty() {
     var selector = new Selector(RDFAUTHOR_DEFAULT_GRAPH, RDFAUTHOR_DEFAULT_SUBJECT, selectorOptions);
     selector.presentInContainer();
 }
-// UDFR - ABHI - Confirm delete operation
+// UDFR - ABHI - Confirm delete model operation
 function deleteModel(resource) {
+	removeResourceMenus();
 	var newLocation;
-	var answer = confirm ("Do you want to delete knowledge base? \n Press \"OK\" for YES or Cancel for \"NO\"")
+	var answer = confirm ("Are you sure you want to delete the knowledge base, \""+resource+"\"? \nTo delete, press \"OK\"")
 	if (answer) {
 		newLocation = urlBase+"/model/delete/?model="+encodeURIComponent(resource);
+	} else {
+		newLocation = window.location.href;
+	}
+	
+	window.location.href = newLocation;
+}
+// UDFR - ABHI - Confirm delete resource operation
+function deleteResource(resource) {
+	removeResourceMenus();
+	var newLocation;
+	var answer = confirm ("Are you sure you want to delete \""+resource+"\"? \nTo delete, press \"OK\"")
+	if (answer) {
+		newLocation = urlBase+"/resource/delete/?r="+encodeURIComponent(resource);
 	} else {
 		newLocation = window.location.href;
 	}
