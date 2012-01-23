@@ -600,3 +600,15 @@ function addProperty() {
     var selector = new Selector(RDFAUTHOR_DEFAULT_GRAPH, RDFAUTHOR_DEFAULT_SUBJECT, selectorOptions);
     selector.presentInContainer();
 }
+// UDFR - ABHI - Confirm delete operation
+function deleteModel(resource) {
+	var newLocation;
+	var answer = confirm ("Do you want to delete knowledge base? \n Press \"OK\" for YES or Cancel for \"NO\"")
+	if (answer) {
+		newLocation = urlBase+"/model/delete/?model="+encodeURIComponent(resource);
+	} else {
+		newLocation = window.location.href;
+	}
+	
+	window.location.href = newLocation;
+}

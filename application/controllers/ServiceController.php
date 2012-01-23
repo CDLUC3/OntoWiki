@@ -212,11 +212,12 @@ class ServiceController extends Zend_Controller_Action
                         array()
                     );
                     $url->setParam('model',$resource,false);
-
-                    $menu->prependEntry(
+					// UDFR - Abhi - Confirm with user before delete	
+                    /*$menu->prependEntry(
                         'Delete Knowledge Base',
                         (string)$url
-                    );
+                    );*/ 
+					$menu->prependEntry( 'Delete Knowledge Base', 'javascript:deleteModel(\''.(string) $resource.'\')');
                 }
                 
                 
