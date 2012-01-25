@@ -189,5 +189,11 @@
         $queryCount = OntoWiki::getInstance()->erfurt->getStore()->getQueryCount();
         $time       = (microtime(true) - REQUEST_START) * 1000;
     ?><!-- <?php echo sprintf($this->_('Rendered in %1$d ms using %2$d SPARQL queries.'), $time, $queryCount) ?> --><?php } ?>
+	<!--UDFR Footer-->
+	<div class="content">
+		<p style="padding-right:5px; float:right; font-size:80%">
+			Copyright &copy; 2012, The Regents of the University of California | Powered by <a href="http://ontowiki.net/Projects/OntoWiki">OntoWiki</a> | <a href="<?php echo $this->urlBase;?>udfrabout/termsofuse">Terms of use</a> | <a href="<?php echo $this->urlBase;?>udfrabout/privacypolicy">Privacy policy</a>
+		</p>
+	</div>
 </body>
 </html>
