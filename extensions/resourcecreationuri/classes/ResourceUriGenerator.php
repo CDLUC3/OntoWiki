@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Copyright © 2012 The Regents of the University of California
+ *
+ * The Unified Digital Format Registry (UDFR) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+/**
  * 
  * Enter description here ...
  * @author criess
@@ -335,8 +344,8 @@ class ResourceUriGenerator {
         
         }
 		
-		// UDFR - ABHI - Give a noid id to every newly created instance
-		$checkUri = true;
+		// UDFR - ABHI - Give a noid id to every newly created instance if model is neither "Ontowiki System Config" and nor "udfr profile"
+		$checkUri = true; //UDFR - ABHI - flag for checking the model
         $baseUri = $this->_model->getBaseUri();
 		
 		if ($baseUri != 'http://localhost/OntoWiki/Config/' && $baseUri != 'http://www.udfr.org/profile/') {
@@ -346,6 +355,7 @@ class ResourceUriGenerator {
 			if (!$fp) {
 				echo "$errstr ($errno)<br />\n";
 			} else {
+				// UDFR - ABHI - noid has two shoulders 'u1f' and 'u1r'. if class is subclass format then call 'u1f' and all rest 'u1r'.
 				if($uriParts['type'] == 'File_format' || $uriParts['type'] == 'Encoding' || $uriParts['type'] == 'Compression') {
 					$out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1f. " HTTP/1.0\r\n";
 				} else $out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1r . " HTTP/1.0\r\n";
@@ -373,7 +383,6 @@ class ResourceUriGenerator {
 				$createdUri = $baseUri. '/' .$noid; 
 			} else $createdUri = $baseUri . '/' . $noid;
         }
-        //var_dump($createdUri); exit;
         return $createdUri;
     }
     
@@ -495,49 +504,5 @@ class ResourceUriGenerator {
         
         return $result;
     }
-	
-	/* UDFR - Abhi - getNoid creates a new uri for newly created Triples
-	* Future implementations are : 
-	* 	1. line#477 create a nice error message if fsockopen fails to call Noid server.
-	*	2. create a nice config array to check if $class = '---uri---'
-	
-	public function getNoid ($subjectUri, $class) {
-		$baseUri = $this->_model->getBaseUri();
-		$fp = fsockopen($this->_config->noidServer->hostName, $this->_config->noidServer->port, $errno, $errstr, 30);
-
-			if (!$fp) {
-				echo "$errstr ($errno)<br />\n";
-			} else {
-				if($class == 'http://www.udfr.org/onto/File_format' || $class == 'http://www.udfr.org/onto#File_format' || $class == 'http://www.udfr.org/onto/Encoding' || $class == 'http://www.udfr.org/onto#Encoding' || $class == 'http://www.udfr.org/onto/Compression' || $class == 'http://www.udfr.org/onto#Compression') {
-					$out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1f. " HTTP/1.0\r\n";
-				} else $out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1r . " HTTP/1.0\r\n";
-				$out .= "Host: ".$this->_config->noidServer->hostName."\r\n";
-				$out .= "Connection: Close\r\n\r\n";
-				fwrite($fp, $out);
-				//echo fgets($fp, 128);
-				
-				while (!feof($fp)) {
-					$noid = fgets($fp, 128); 				
-				}
-				//echo $out;
-				fclose($fp);
-			}
-			$noid = trim($noid);
-			
-		 
-		
-		$baseUriLastCharacter = $baseUri[ strlen($baseUri) - 1];
-		if ( ($baseUriLastCharacter == '/') || ($baseUriLastCharacter == '#') ) {
-            
-				$createdUri = $baseUri . $noid; 
-			
-        } else {
-            // avoid ugly glued uris without separator
-           
-				$createdUri = $baseUri. '/' .$noid; 
-			
-        }
-		return $createdUri;
-	}*/
-    
+ 
 }

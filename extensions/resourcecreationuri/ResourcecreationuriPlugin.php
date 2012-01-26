@@ -3,6 +3,15 @@ require_once 'OntoWiki/Plugin.php';
 require_once OntoWiki::getInstance()->extensionManager->getExtensionPath().'resourcecreationuri/classes/ResourceUriGenerator.php';
 
 /**
+ * Copyright © 2012 The Regents of the University of California
+ *
+ * The Unified Digital Format Registry (UDFR) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+/**
  * Plugin that tries to make nice uris if new resources are created.
  *
  * @category   OntoWiki
@@ -69,6 +78,8 @@ class ResourcecreationuriPlugin extends OntoWiki_Plugin
                 foreach ($this->insertData[$subjectUri] as $p => $o) {
                     $temp[$newUri][$p] = $o;
                 }
+				// UDFR - Abhi - add 1 more triple into newly created instance 
+				//				 if model is neither "Ontowiki System Config" and nor "udfr profile"
 				$baseUri = $gen->getCurrentModel();
 				if ($baseUri != 'http://localhost/OntoWiki/Config/' && $baseUri != 'http://www.udfr.org/profile/') {
 					$len = strlen($newUri)-strlen($baseUri);
