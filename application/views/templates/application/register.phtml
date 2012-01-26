@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Copyright © 2012 The Regents of the University of California
+ *
+ * The Unified Digital Format Registry (UDFR) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+/**
  * OntoWiki user details template
  *
  * @author Norman Heino <norman.heino@gmail.com>
@@ -9,13 +18,15 @@
  */
 
 ?>
+<!--UDFR - Terms and condition for register new user-->
 <div class="messagebox">
 	<p style="padding-left:8px">By registering for an account with the UDFR you agree to contribute information under the terms of the Creative Commons 
 		<a href="http://creativecommons.org/licenses/by/2.0/">CC-BY</a> license.  
 		Furthermore, you agree that your full name, title, institutional affiliation, additional information, and website will be made permanently and publicly visible via the &quot;History&quot; tab for all contributed information.  
-		This information is made public in furtherance of the legitimate UDFR business need to provide strong provenance for all content contributions.  For more information refer to the UDFR privacy policy.
+		This information is made public in furtherance of the legitimate UDFR business need to provide strong provenance for all content contributions.  For more information refer to the UDFR <a href="<?php echo $this->urlBase;?>udfrabout/privacypolicy">privacy policy</a>.
 	</p>
 </div>
+
 <fieldset>
     <div>
         <label for="name-input" title="User name (visible to all users via the History tab)"><?php echo $this->_('Username') ?><span style="color:red">*</span></label>
