@@ -1,312 +1,216 @@
-#,,
-# OntoWiki French language translation,,
-# Encoding:  UTF-8,,
-# Separator: ;,,
-#,,
-Back;,Dos;,
-Submit;,Soumettez;,
-Cancel;,DÈcommandez;,
-Save Changes;,Changements d'Èconomies ;,
-Reset Form;,Remettez ‡ zÈro la forme ;,
-Edit Instances;,…ditez les exemples ;,
-Edit Properties;,…ditez les propriÈtÈs ;,
-Add Property;,Ajoutez la propriÈtÈ ;,
-Rendered in %1$d microseconds using %2$d SPARQL queries.;,Rendu en micro-secondes de %1$d utilisant des questions de %2$d SPARQL. ;,
-more;,plus ;,
-,,
-moments ago;,il y a des moments ;,
-approx. 1 minute ago;,il y a approximativement 1 minute ;,
-approx. %d minutes ago;,approximativement %d il y a des minutes ;,
-approx. 1 hour ago;,il y a approximativement 1 heure ;,
-approx. %d hours ago;,approximativement %d il y a des heures ;,
-approx. %d days ago;,approximativement % il y a des jours J ;,
-,,
-# test,,
-page1;,page1;,
-page2;,page2 ;,
-,,
-,,
-# Module,,
-Search all Knowledge Bases;,Recherchez toutes les bases de connaissances ;,
-Search Text;,Recherchez le texte ;,
-Select Knowledge Bases;,Choisissez les bases de connaissances ;,
-Create Knowledge Base;,CrÈez la base de connaissance ;,
-Show Hidden Knowledge Bases;,Montrez les bases de connaissances cachÈes ;,
-Hide Hidden Knowledge Bases;,Cachez les bases de connaissances cachÈes ;,
-Languages (Tagged Literals);,Langues (coquilles ÈtiquetÈes) ;,
-none;,aucun ;,
-Classes;,Classes ;,
-Create Class;,CrÈez la classe ;,
-Show Empty Classes;,Montrez les classes vides ;,
-Hide Empty Classes;,Cachez les classes vides ;,
-Show System Classes;,Montrez les classes de systËme ;,
-Hide System Classes;,Cachez les classes de systËme ;,
-Show Hidden Classes;,Montrez les classes cachÈes ;,
-Hide Hidden Classes;,Cachez les classes cachÈes ;,
-Most Popular | Most Active;,Le plus populaire | Plus Active ;,
-Rec. Changes;,REC. Change ;,
-Rec. Comments;,REC. Commente ;,
-Login;,Ouverture ;,
-No matches.;,Aucunes allumettes. ;,
-Predicates;,Attributs ;,
-Similar Instances;,Exemples semblables ;,
-Instances Linking Here;,Exemples liant ici ;,
-Usage as Property;,Utilisation comme propriÈtÈ ;,
-Not implemented yet.;,Non mis en application encore. ;,
-Latest Changes;,Les plus dÈfunts changements ;,
-Latest Discussions;,Les plus dÈfuntes discussions ;,
-Comments,Commentaires,
-Actions;,Actions ;,
-There are no comments,Il n'y a aucune commentaire,
-view all resources;,regardez toutes les ressources ;,
-Search for Resources;,Recherchez les ressources ;,
-Source;,Source ;,
-by;,par ;,
-Objects;,Objets ;,
-Subjects;,Sujets ;,
-,,
-,,
-# Komponenten,,
-# TODO: sollten Komponenten ihre √úbersetzung selbst verwalten?,,
-Properties;,PropriÈtÈs ;,
-Instances;,Exemples ;,
-Calendar;,Calendrier ;,
-History;,Histoire ;,
-Map;,Carte ;,
-,,
-# application menu,,
-User;,Utilisateur ;,
-Register New User;,Nouvel utilisateur de registre ;,
-Preferences;,PrÈfÈrences ;,
-Logout;,DÈconnexion ;,
-View;,Vue ;,
-Edit;,…ditez ;,
-Extras;,Frais supplÈmentaires ;,
-SPARQL Query Editor;,RÈdacteur de question de SPARQL ;,
-File Resource Manager;,Directeur de ressource de dossier ;,
-News;,Nouvelles ;,
-Clear Cache;,Cachette claire ;,
-Help;,Aide ;,
-Documentation;,Documentation ;,
-Bug Report;,Rapport de bogue ;,
-Version Info;,Information de version ;,
-About;,Au sujet de ;,
-,,
-#Pager,,
-First;,D'abord ;,
-Previous;,PrÈcÈdent ;,
-Next;,AprËs ;,
-Last;,Bout ;,
-,,
-Create New Knowledge Base;,CrÈez la base de nouvelles connaissances ;,
-Model URI;,Modelez URI ;,
-Create an Empty Knowledge Base;,CrÈez une base de connaissance vide ;,
-Base URI;,Basez URI ;,
-Type;,Type ;,
-Import From the Web;,Importation en provenance du Web ;,
-Upload a File;,TÈlÈchargez un dossier ;,
-File Type;,Type de dossier ;,
-File (max. %1$sB);,Dossier (maximum %1$sB) ;,
-Paste Source;,Source de p‚te ;,
-Source Code;,Code source ;,
-Enter the URL where the model should be downloaded from. If you leave the field empty the model URI will be used.;,…crivez l'URL d'o˘ le modËle devrait Ítre tÈlÈchargÈ. Si vous laissez le champ videz le modËle URI sera employÈ. ;,
-Location;,Endroit ;,
-Instances of %1$s;,Exemples de %1$s ;,
-Properties of %1$s;,PropriÈtÈs de %1$s ;,
-,,
-Register User;,Utilisateur de registre ;,
-Username;,Username ;,
-Email Address;,Email address ;,
-Password;,Mot de passe ;,
-Password (repeat);,Mot de passe (rÈpÈtition) ;,
-Unknown user identifier.;,Marque inconnue d'utilisateur. ;,
-Forgot your password?;,A oubliÈ votre mot de passe ? ;,
-,,
-Predefined namespaces;,Namespaces prÈdÈfinis ;,
-SPARQL Options;,Options de SPARQL ;,
-Plain;,Plaine ;,
-Submit Query;,Soumettez la question ;,
-result;,rÈsultat ;,
-results;,rÈsultats ;,
-Search returned %1$d %2$s.;,%1$d retournÈ par recherche %2$s. ;,
-Query execution took %1$d ms.;,L'exÈcution de question a pris Mme de %1$d ;,
-,,
-# Men√ºs,,
-View Resource;,Ressource de vue ;,
-Edit Resource;,…ditez la ressource ;,
-Delete Resource;,Supprimez la ressource ;,
-,,
-List Instances;,…numÈrez les exemples ;,
-Create Instance;,CrÈez l'exemple ;,
-Create Subclass;,CrÈez la sous-classe ;,
-,,
-Select Knowledge Base;,Choisissez la base de connaissance ;,
-Configure Knowledge Base;,Configurez la base de connaissance ;,
-Add Data to Knowledge Base;,Ajoutez les donnÈes ‡ la base de connaissance ;,
-Export Knowledge Base as RDF/XML;,Exportez la base de connaissance comme RDF/XML ;,
-Export Knowledge Base as RDF/JSON;,Exportez la base de connaissance comme RDF/JSON ;,
-Export Knowledge Base as RDF/N3;,Exportez la base de connaissance comme RDF/N3 ;,
-Export Knowledge Base as RDF/JSON (Talis);,Exportez la base de connaissance comme RDF/JSON (Talis) ;,
-Export Knowledge Base as Turtle;,Exportez la base de connaissance comme tortue ;,
-Export Knowledge Base as Notation 3;,Exportez la base de connaissance comme notation 3 ;,
-Delete Knowledge Base;,Supprimez la base de connaissance ;,
-,,
-# Wochentage,,
-Monday,Lundi;,
-Tuesday,Mardi;,
-Wednesday,Mercredi;,
-Thursday,Jeudi;,
-Friday,Vendredi;,
-Saturday,Samedi;,
-Sunday,Dimanche;,
-,,
-Add Class;,Ajoutez la classe ;,
-Add Instance;,Ajoutez l'exemple ;,
-,,
-Show Properties;,Montrez les propriÈtÈs ;,
-,,
-Filter;,Filtre ;,
-Combine Filters (Conjunction);,Filtres de cartel (conjonction) ;,
-,,
-Merge;,Fusion ;,
-Visit resource on the web;,Ressource de visite sur le Web ;,
-,,
-Create instances from property value by regexp,CrÈez les exemples des valeurs d'une propriÈtÈ par le regexp;,
-Similar Instances,Exemples semblables; ,
-Rating,Estimation; ,
-Average Rating,Estimation moyenne; ,
-Your Rating,Votre estimation; ,
-Instances Linking Here,Exemples liant ici; ,
-Usage as Property,Utilisation comme propriÈtÈ; ,
-Instances,Exemples; ,
-Values,Valeurs; ,
-Search | OntoWiki,Recherche | OntoWiki; ,
-Search Text,Texte de recherche,
-Submit,Soumettez,
-Search All Knowledge Bases,Recherchez toutes les bases de connaissances,
-Search,Recherche; ,
-Add Property,Ajoutez la propriÈtÈ; ,
-Submit Values,Soumettez les valeurs; ,
-SPARQL Query Editor,RÈdacteur de question de SPARQL; ,
-Result Options,Options de rÈsultat; ,
-Table,Tableau; ,
-SPARQL Query Results XML Format,Format des rÈsultats XML de question de SPARQL; ,
-Render Ressources as OntoWiki Links,Rendez les ressources comme liens; ,
-Create New Knowledge Base,d'OntoWiki CrÈez la base de nouvelles connaissances; ,
-FOAFSSL;,FOAFSSL ;,
-,,
-# explore tags module,,
-Explore Tags;,Explorez les Ètiquettes ;,
-Reset Explore Tags Box;,La remise explorent la boÓte d'Ètiquettes ;,
-Reset selected tags;,Remettez ‡ zÈro les Ètiquettes choisies ;,
-Number of showed tags;,Nombre d'Ètiquettes montrÈes ;,
-Sort;,Sorte ;,
-by name;,de nom ;,
-by frequency;,par la frÈquence ;,
-,,
-# navigation module,,
-Number of Elements;,Nombre d'ÈlÈments ;,
-Toggle Elements;,…lÈments ‡ bascule ;,
-Reset Navigation;,Remettez ‡ zÈro la navigation ;,
-Add Resource here;,Ajoutez la ressource ici ;,
-Show Hidden Elements;,Montrez les ÈlÈments cachÈs ;,
-Hide Hidden Elements;,Cachez les ÈlÈments cachÈs ;,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-, descriptions et notes ;,
-,,
-, description ou note sur cette base de connaissance. ;,
+Ôªø#,
+# OntoWiki French language translation,
+# Encoding:  UTF-8,
+# Separator: ;
+#
+Back;Dos
+Submit;Soumettez
+Cancel;D√©commandez
+Save Changes;Changements d'√©conomies
+Reset Form;Remettez √† z√©ro la forme
+Edit Instances;√âditez les exemples
+Edit Properties;√âditez les propri√©t√©s
+Add Property;Ajoutez la propri√©t√©
+Rendered in %1$d microseconds using %2$d SPARQL queries.;Rendu en micro-secondes de %1$d utilisant des questions de %2$d SPARQL.
+more;plus
+
+moments ago;il y a des moments
+approx. 1 minute ago;il y a approximativement 1 minute
+approx. %d minutes ago;approximativement %d il y a des minutes
+approx. 1 hour ago;il y a approximativement 1 heure
+approx. %d hours ago;approximativement %d il y a des heures
+approx. %d days ago;approximativement % il y a des jours J
+
+# test,
+page1;page1
+page2;page2
+
+
+# Module,
+Search all Knowledge Bases;Recherchez toutes les bases de connaissances 
+Search Text;Recherchez le texte 
+Select Knowledge Bases;Choisissez les bases de connaissances 
+Create Knowledge Base;Cr√©ez la base de connaissance 
+Show Hidden Knowledge Bases;Montrez les bases de connaissances cach√©es 
+Hide Hidden Knowledge Bases;Cachez les bases de connaissances cach√©es 
+Languages (Tagged Literals);Langues (coquilles √©tiquet√©es) 
+none;aucun 
+Classes;Classes 
+Create Class;Cr√©ez la classe 
+Show Empty Classes;Montrez les classes vides 
+Hide Empty Classes;Cachez les classes vides 
+Show System Classes;Montrez les classes de syst√®me 
+Hide System Classes;Cachez les classes de syst√®me 
+Show Hidden Classes;Montrez les classes cach√©es 
+Hide Hidden Classes;Cachez les classes cach√©es
+Most Popular | Most Active;Le plus populaire | Plus Active
+Rec. Changes;REC. Change
+Rec. Comments;REC. Commente
+Login;Ouverture 
+No matches.;Aucunes allumettes.
+Predicates;Attributs
+Similar Instances;Exemples semblables
+Instances Linking Here;Exemples liant ici
+Usage as Property;Utilisation comme propri√©t√©
+Not implemented yet.;Non mis en application encore.
+Latest Changes;Les plus d√©funts changements
+Latest Discussions;Les plus d√©funtes discussions
+Comments;Commentaires
+Actions;Actions
+There are no comments,Il n'y a aucune commentaire
+view all resources;regardez toutes les ressources
+Search for Resources;Recherchez les ressources
+Source;Source
+by;par
+Objects;Objets
+Subjects;Sujets
+
+# Komponenten,
+# TODO: sollten Komponenten ihre √É≈ìbersetzung selbst verwalten?,
+Properties;Propri√©t√©s ;
+Instances;Exemples ;
+Calendar;Calendrier ;
+History;Histoire ;
+Map;Carte ;
+
+# application menu,
+User;Utilisateur
+Register New User;Nouvel utilisateur de registre
+Preferences;Pr√©f√©rences
+Logout;D√©connexion
+View;Vue
+Edit;√âditez
+Extras;Frais suppl√©mentaires
+SPARQL Query Editor;R√©dacteur de question de SPARQL
+File Resource Manager;Directeur de ressource de dossier
+News;Nouvelles
+Clear Cache;Cachette claire
+Help;Aide
+Documentation;Documentation
+Bug Report;Rapport de bogue
+Version Info;Information de version
+About;Au sujet de
+
+#Pager
+First;D'abord
+Previous;Pr√©c√©dent
+Next;Apr√®s
+Last;Bout
+
+Create New Knowledge Base;Cr√©ez la base de nouvelles connaissances
+Model URI;Modelez URI
+Create an Empty Knowledge Base;Cr√©ez une base de connaissance vide
+Base URI;Basez URI
+Type;Type
+Import From the Web;Importation en provenance du Web
+Upload a File;T√©l√©chargez un dossier
+File Type;Type de dossier
+File (max. %1$sB);Dossier (maximum %1$sB)
+Paste Source;Source de p√¢te
+Source Code;Code source
+Enter the URL where the model should be downloaded from. If you leave the field empty the model URI will be used.;√âcrivez l'URL d'o√π le mod√®le devrait √™tre t√©l√©charg√©. Si vous laissez le champ videz le mod√®le URI sera employ√©.
+Location;Endroit
+Instances of %1$s;Exemples de %1$s
+Properties of %1$s;Propri√©t√©s de %1$s
+
+Register User;Utilisateur de registre
+Username;Username
+Email Address;Email address
+Password;Mot de passe
+Password (repeat);Mot de passe (r√©p√©tition)
+Unknown user identifier.;Marque inconnue d'utilisateur.
+Forgot your password?;A oubli√© votre mot de passe ?
+
+Predefined namespaces;Namespaces pr√©d√©finis
+SPARQL Options;Options de SPARQL
+Plain;Plaine
+Submit Query;Soumettez la question
+result;r√©sultat
+results;r√©sultats
+Search returned %1$d %2$s.;%1$d retourn√© par recherche %2$s.
+Query execution took %1$d ms.;L'ex√©cution de question a pris Mme de %1$d
+
+# Men√É¬ºs,
+View Resource;Ressource de vue
+Edit Resource;√âditez la ressource
+Delete Resource;Supprimez la ressource
+
+List Instances;√ânum√©rez les exemples
+Create Instance;Cr√©ez l'exemple
+Create Subclass;Cr√©ez la sous-classe
+
+Select Knowledge Base;Choisissez la base de connaissance
+Configure Knowledge Base;Configurez la base de connaissance
+Add Data to Knowledge Base;Ajoutez les donn√©es √† la base de connaissance
+Export Knowledge Base as RDF/XML;Exportez la base de connaissance comme RDF/XML
+Export Knowledge Base as RDF/JSON;Exportez la base de connaissance comme RDF/JSON
+Export Knowledge Base as RDF/N3;Exportez la base de connaissance comme RDF/N3
+Export Knowledge Base as RDF/JSON (Talis);Exportez la base de connaissance comme RDF/JSON (Talis)
+Export Knowledge Base as Turtle;Exportez la base de connaissance comme tortue
+Export Knowledge Base as Notation 3;Exportez la base de connaissance comme notation 3
+Delete Knowledge Base;Supprimez la base de connaissance
+
+# Wochentage,
+Monday;Lundi
+Tuesday;Mardi
+Wednesday;Mercredi
+Thursday;Jeudi
+Friday;Vendredi
+Saturday;Samedi
+Sunday;Dimanche
+
+Add Class;Ajoutez la classe
+Add Instance;Ajoutez l'exemple
+
+Show Properties;Montrez les propri√©t√©s
+
+Filter;Filtre
+Combine Filters (Conjunction);Filtres de cartel (conjonction)
+
+Merge;Fusion
+Visit resource on the web;Ressource de visite sur le Web
+
+Create instances from property value by regexp;Cr√©ez les exemples des valeurs d'une propri√©t√© par le regexp
+Similar Instances;Exemples semblables
+Rating;Estimation
+Average Rating;Estimation moyenne
+Your Rating;Votre estimation
+Instances Linking Here;Exemples liant ici
+Usage as Property;Utilisation comme propri√©t√©
+Instances;Exemples
+Values;Valeurs
+Search | OntoWiki;Recherche | OntoWiki
+Search Text;Texte de recherche
+Submit;Soumettez
+Search All Knowledge Bases;Recherchez toutes les bases de connaissances
+Search;Recherche
+Add Property;Ajoutez la propri√©t√©
+Submit Values;Soumettez les valeurs
+SPARQL Query Editor;R√©dacteur de question de SPARQL
+Result Options;Options de r√©sultat
+Table;Tableau
+SPARQL Query Results XML Format;Format des r√©sultats XML de question de SPARQL
+Render Ressources as OntoWiki Links;Rendez les ressources comme liens
+Create New Knowledge Base;d'OntoWiki Cr√©ez la base de nouvelles connaissances
+FOAFSSL;FOAFSSL 
+
+# explore tags module,
+Explore Tags;Explorez les √©tiquettes 
+Reset Explore Tags Box;La remise explorent la bo√Æte d'√©tiquettes 
+Reset selected tags;Remettez √† z√©ro les √©tiquettes choisies 
+Number of showed tags;Nombre d'√©tiquettes montr√©es 
+Sort;Sorte 
+by name;de nom 
+by frequency;par la fr√©quence 
+
+# navigation module,
+Number of Elements;Nombre d'√©l√©ments 
+Toggle Elements;√âl√©ments √† bascule 
+Reset Navigation;Remettez √† z√©ro la navigation 
+Add Resource here;Ajoutez la ressource ici 
+Show Hidden Elements;Montrez les √©l√©ments cach√©s
+Hide Hidden Elements;Cachez les √©l√©ments cach√©s
+Properties;propri√©t√©s
+descriptions et notes ;
+
+description ou note sur cette base de connaissance. ;
