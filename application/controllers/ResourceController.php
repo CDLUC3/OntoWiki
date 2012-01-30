@@ -44,15 +44,14 @@ class ResourceController extends OntoWiki_Controller_Base {
 
     private function _initialize()
     {
-    	
-            $getstore = Erfurt_App::getInstance()->getStore();
+    	$getstore = Erfurt_App::getInstance()->getStore();
         
         if (!$getstore->isSqlSupported()) {
             throw new Exception('For create table store adapter needs to implement the SQL interface.');
         }
         
         $existingTableNames = $getstore->listTables();
-		//var_dump($existingTableNames); exit();
+		
         if (!in_array('ef_reviews', $existingTableNames)) {
             $columnSpec = array(
                 'id'          => 'INT PRIMARY KEY AUTO_INCREMENT',
@@ -271,25 +270,17 @@ class ResourceController extends OntoWiki_Controller_Base {
     	$graph      = $this->_owApp->selectedModel;
 		$modelIri = $graph->getModelIri();
 		$baseIri  = $graph->getBaseIri();
-		//$resource   = $this->_owApp->selectedResource;
 		$resourceUri   = (string)$resource;
 		$model = new OntoWiki_Model_Resource($store, $graph, (string)$resource);
         $values = $model->getValues();
 		$predicates = $model->getPredicates();
-		//var_dump($resource); echo '<br>'; echo '<br>';
-		//var_dump($predicates); echo '<br>';echo '<br>'; var_dump($values); exit;
+		
         // get versioning
         $versioning = $this->_erfurt->getVersioning();
-	
-	
-	
+		
       	if($_POST['property_review']){
 
 		foreach($_POST['property_review'] as $val) {
-
-	    //$sql = 'UPDATE ef_stmt SET review_flag = 1 WHERE s = \'' . addslashes($resourceUri) . '\' AND p = \'' . addslashes($val) . '\'';
-	    //var_dump($modelIri); exit;
-	    //$store->sqlQuery($sql);
 
 	    foreach ($predicates as $graph => $predicatesForGraph) { 
 
@@ -304,7 +295,7 @@ class ResourceController extends OntoWiki_Controller_Base {
 			            if ($entry['uri']===NULL) {
 				      		$actionsSql = 'INSERT INTO ef_reviews (model, s, p, o, review_flag) VALUES (\''. addslashes($modelIri) . '\', \'' . addslashes($resourceUri) . '\', \'' . addslashes($val) . '\', \'' 
 						   . $entry['object'] . '\', ' . (int)$flag .  ')' ;
-				       //var_dump($actionsSql); exit;
+				       
 	    			      $store->sqlQuery($actionsSql);
 							$event->statement = array(
 									'subject'   => $resourceUri,
@@ -315,7 +306,7 @@ class ResourceController extends OntoWiki_Controller_Base {
 				    	else {
 							$actionsSql = 'INSERT INTO ef_reviews (model, s, p, o, review_flag) VALUES (\''. addslashes($modelIri) . '\', \'' .addslashes($resourceUri) . '\', \'' . addslashes($val) . '\', \'' 
 						     . $entry['uri'] . '\', ' . (int)$flag .  ')' ;
-							//var_dump($actionsSql); exit;
+							
 	    			        $store->sqlQuery($actionsSql);
 					  		$event->statement = array(
 									'subject'   => $resourceUri,
@@ -323,7 +314,7 @@ class ResourceController extends OntoWiki_Controller_Base {
 					            	'object'    => array('value'    => $entry['uri'], 'type'     => 'uri')
 					         		);
 				    	}
-			            $event->trigger();//*/ var_dump ($entry); echo '<br>';
+			            $event->trigger();
 					}
 		    	}
 	        }
@@ -366,6 +357,10 @@ class ResourceController extends OntoWiki_Controller_Base {
         $listName = 'instances';
         if($listHelper->listExists($listName)){
             $list = $listHelper->getList($listName);
+			
+			// UDFR - ABHI - sort the list of instance by their label
+			$list->setOrderProperty("http://www.w3.org/2000/01/rdf-schema#label");
+			
             $listHelper->addList($listName, $list, $this->view);
         } else {
             if($this->_owApp->selectedModel == null){
