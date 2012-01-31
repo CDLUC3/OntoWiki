@@ -150,8 +150,8 @@ class ServiceController extends Zend_Controller_Action
     {
         $module   = $this->_request->getParam('module');
         $resource = $this->_request->getParam('resource');
-
-        $translate = $this->_owApp->translate;
+		
+		$translate = $this->_owApp->translate;
 
         // create empty menu first
         $menuRegistry = OntoWiki_Menu_Registry::getInstance();
@@ -163,6 +163,18 @@ class ServiceController extends Zend_Controller_Action
         }
         
         if (!empty($resource)) {
+			// UDFR - Abhi - Search for last '#' in resource string
+			if (strrchr($resource, "#")){
+				$search = strrchr($resource, "#");
+				$trim   = substr($search, 1, 8);
+				$trim2  = substr($search, 1, 20);
+			}
+			else {
+				$search = strrchr($resource, "/");
+				$trim = substr($search, 1, 8);	
+				$trim2  = substr($search, 1, 20);
+			}
+			
             $models = array_keys($this->_owApp->erfurt->getStore()->getAvailableModels(true));
             $isModel = in_array($resource, $models);
 			
@@ -172,26 +184,6 @@ class ServiceController extends Zend_Controller_Action
                 (string)$resource
             );*/
 
-            if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
-                // Delete resource option
-                $url = new OntoWiki_Url(
-                    array('controller' => 'resource', 'action' => 'delete'),
-                    array()
-                );
-                if ($isModel) {
-                    //$url->setParam('m',$resource,false);  // UDFR - Abhi - NO need for this
-					//$menu->prependEntry( 'Delete Resource', (string) $url ); // UDFR - ABHI - NO need for this
-                }
-				else {
-					$url->setParam('r',$resource,true);
-					// UDFR - ABHI - Confirm with user before delete  
-					//$menu->prependEntry( 'Delete Resource', (string) $url );
-					$menu->prependEntry( 'Delete Resource', 'javascript:deleteResource(\''.(string) $resource.'\')' );
-				}
-                // edit resource option
-                $menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
-            }
-            
             // add resource menu entries
             $url = new OntoWiki_Url(
                 array( 'action' => 'view'),
@@ -311,7 +303,33 @@ class ServiceController extends Zend_Controller_Action
                 foreach ($results[0] as $row) {
                     $typeArray[] = $row['type'];
                 }
-				//var_dump($typeArray); exit;
+				if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
+					// Delete resource option
+					$url = new OntoWiki_Url(
+						array('controller' => 'resource', 'action' => 'delete'),
+						array()
+					);
+					if ($isModel) {
+						//$url->setParam('m',$resource,false);  // UDFR - Abhi - NO need for this
+						//$menu->prependEntry( 'Delete Resource', (string) $url ); // UDFR - ABHI - NO need for this
+					}
+					else {
+						$url->setParam('r',$resource,true);
+						// UDFR - ABHI - Confirm with user before delete  
+						//$menu->prependEntry( 'Delete Resource', (string) $url );
+						$menu->prependEntry( 'Delete Resource', 'javascript:deleteResource(\''.(string) $resource.'\')' );
+					}
+					
+					// edit resource option
+					// UDFR - ABHI - check if resource is an instance or class
+					if ( !in_array(EF_OWL_CLASS, $typeArray) ) {
+							$menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
+					}
+					else if ($trim == 'Abstract' || $trim2 == 'ControlledVocabulary') {
+						//UDFR- do not show edit resource option, because it is a class and has "Abstract" OR "ControlledVocabulary" word in it
+					} else $menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
+				}
+				
                 if (in_array(EF_RDFS_CLASS, $typeArray) ||
                     in_array(EF_OWL_CLASS, $typeArray)  ||
                     $hasInstances
@@ -326,16 +344,7 @@ class ServiceController extends Zend_Controller_Action
                     $url->setParam('class',$resource,false);
                     $url->setParam('init',"true",true);
 					
-                    // UDFR - Abhi - Search for last '#' in resource string
-                    if (strrchr($resource, "#")){
-                    	$search = strrchr($resource, "#");
-                    	$trim = substr($search, 1, 8);	
-                    }
-                    else {
-                    	$search = strrchr($resource, "/");
-                    	$trim = substr($search, 1, 8);	
-                    }
-					/*
+                    /*
                     // add class menu entries
                     if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
                         $menu->prependEntry(
@@ -344,9 +353,11 @@ class ServiceController extends Zend_Controller_Action
                         );
                     }
 					*/
-					
+
 					// add class menu entries
-                    if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) && $trim != 'Abstract') {  // Don't allow create instance for Abstract classes
+                    if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) 
+						&& $trim != 'Abstract' 
+						&& $trim2 != 'ControlledVocabulary') {  //UDFR- Don't allow create instance for Abstract and Controlled Vocab classes
                         $menu->prependEntry(
                             'Create Instance',
                             "javascript:createInstanceFromClassURI('$resource');"
@@ -360,7 +371,8 @@ class ServiceController extends Zend_Controller_Action
                      // ->prependEntry('Create Instance', $this->_config->urlBase . 'index/create/?r=')
                      // ->prependEntry('Create Subclass', $this->_config->urlBase . 'index/create/?r=');
                 }
-            }        
+            }
+			
         }
         
         // Fire a event;
@@ -1167,12 +1179,7 @@ class ServiceController extends Zend_Controller_Action
         $newProperties = new stdClass();
         $properties = $properties['results']['bindings'];
         
-       	/*echo "abhishek-----<pre>";
-            	var_dump($properties); echo '<br>';
-            	//var_dump($properties2); echo '<br>';
-        echo "</pre>";
-        exit;*/
-        //UDFR - Abhi - create an array which has no repeat properties
+       	//UDFR - Abhi - create an array which has no repeat properties
         if (isset($properties2)) {
        		$properties2 = $properties2['results']['bindings'];
        		$i = 0;
@@ -1302,10 +1309,7 @@ class ServiceController extends Zend_Controller_Action
             
             $output->$resourceUri = $newProperties;
         }
-        /*echo "abhishek-----<pre>";
-            	var_dump($newProperties);
-        echo "</pre>";
-		 exit;*/
+        
         // send the response
         $response->setHeader('Content-Type', 'application/json');
         $response->setBody(json_encode($output));

@@ -12,13 +12,10 @@
 /**
  * UDFR noid indetifier creator.
  * 
- * @package    application
- * @subpackage mvc
- * @author     Abhishek Salve <abhishek.salve@ucop.edu>
- * @copyright  
- * @license    
- * @version
- * @description new u1f and u1r action for NOID 
+ * @package     application
+ * @subpackage  mvc
+ * @author      Abhishek Salve <abhishek.salve@ucop.edu>
+ * @discription new u1f and u1r action for NOID 
  */
 class NoidController extends Zend_Controller_Action
 {

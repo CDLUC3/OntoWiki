@@ -226,7 +226,7 @@ class ResourceController extends OntoWiki_Controller_Base {
             // ->appendButton(OntoWiki_Toolbar::EDITADD, array('name' => 'Add Property', 'class' => 'property-add'));
             $params = array(
                     'name' => 'Delete',
-                    'url'  => $this->_config->urlBase . 'resource/delete/?r=' . urlencode((string)$resource)
+                    'url'  => 'javascript:deleteResource(\''.(string) $resource.'\')'
             );
             $toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
                     ->appendButton(OntoWiki_Toolbar::DELETE, $params);

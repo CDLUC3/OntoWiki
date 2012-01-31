@@ -249,8 +249,7 @@ class HistoryController extends OntoWiki_Controller_Component
             foreach ($results as $result) {
                 $resources[] = $result[$resourceVar];
             }
-            //var_dump($resources);
-            
+                        
             $historyArray = $versioning->getHistoryForResourceList(
                 $resources,
                 (string) $this->_owApp->selectedModel,
