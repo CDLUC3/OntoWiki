@@ -321,7 +321,7 @@ class ServiceController extends Zend_Controller_Action
 					}
 					
 					// edit resource option
-					// UDFR - ABHI - check if resource is an instance or class
+					// UDFR - ABHI -check if resource is an instance or class
 					if ( !in_array(EF_OWL_CLASS, $typeArray) ) {
 							$menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
 					}
