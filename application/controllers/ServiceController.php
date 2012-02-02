@@ -168,13 +168,15 @@ class ServiceController extends Zend_Controller_Action
 				$search = strrchr($resource, "#");
 				$trim   = substr($search, 1, 8);
 				$trim2  = substr($search, 1, 20);
+				$trim3 = preg_match("/Type/i", $search);
 			}
 			else {
 				$search = strrchr($resource, "/");
 				$trim = substr($search, 1, 8);	
 				$trim2  = substr($search, 1, 20);
+				$trim3 = preg_match("/Type/i", $search);
 			}
-			
+
             $models = array_keys($this->_owApp->erfurt->getStore()->getAvailableModels(true));
             $isModel = in_array($resource, $models);
 			
@@ -303,7 +305,7 @@ class ServiceController extends Zend_Controller_Action
                 foreach ($results[0] as $row) {
                     $typeArray[] = $row['type'];
                 }
-				if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
+				/*if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
 					// Delete resource option
 					$url = new OntoWiki_Url(
 						array('controller' => 'resource', 'action' => 'delete'),
@@ -321,14 +323,14 @@ class ServiceController extends Zend_Controller_Action
 					}
 					
 					// edit resource option
-					// UDFR - ABHI -check if resource is an instance or class
+					/* UDFR - ABHI -check if resource is an instance or class
 					if ( !in_array(EF_OWL_CLASS, $typeArray) ) {
 							$menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
 					}
 					else if ($trim == 'Abstract' || $trim2 == 'ControlledVocabulary') {
 						//UDFR- do not show edit resource option, because it is a class and has "Abstract" OR "ControlledVocabulary" word in it
 					} else $menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
-				}
+				}*/
 				
                 if (in_array(EF_RDFS_CLASS, $typeArray) ||
                     in_array(EF_OWL_CLASS, $typeArray)  ||
@@ -336,7 +338,7 @@ class ServiceController extends Zend_Controller_Action
                 ) {
                     // add a seperator
                     $menu->prependEntry(OntoWiki_Menu::SEPARATOR);
-
+					
                     $url = new OntoWiki_Url(
                         array('action' => 'list'),
                         array()
@@ -353,11 +355,12 @@ class ServiceController extends Zend_Controller_Action
                         );
                     }
 					*/
-
+					
 					// add class menu entries
                     if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) 
 						&& $trim != 'Abstract' 
-						&& $trim2 != 'ControlledVocabulary') {  //UDFR- Don't allow create instance for Abstract and Controlled Vocab classes
+						&& $trim2 != 'ControlledVocabulary'
+						&& $trim3 < 1 ) {  //UDFR- Don't allow create instance for Abstract and Controlled Vocab classes
                         $menu->prependEntry(
                             'Create Instance',
                             "javascript:createInstanceFromClassURI('$resource');"
@@ -370,7 +373,19 @@ class ServiceController extends Zend_Controller_Action
                     );
                      // ->prependEntry('Create Instance', $this->_config->urlBase . 'index/create/?r=')
                      // ->prependEntry('Create Subclass', $this->_config->urlBase . 'index/create/?r=');
-                }
+                } else if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
+					if ($isModel) {
+						//$url->setParam('m',$resource,false);  // UDFR - Abhi - NO need for this
+						//$menu->prependEntry( 'Delete Resource', (string) $url ); // UDFR - ABHI - NO need for this
+					}
+					else {
+						//$url->setParam('r',$resource,true);
+						//$menu->prependEntry( 'Delete Resource', (string) $url );
+						// UDFR - ABHI - Confirm with user before delete 
+						$menu->prependEntry( 'Delete Resource', 'javascript:deleteResource(\''.(string) $resource.'\')' );
+					}
+					$menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
+				}
             }
 			
         }

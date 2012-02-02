@@ -208,7 +208,6 @@ class ApplicationController extends OntoWiki_Controller_Base
 		$user                      = $this->_owApp->getUser();
         $currentUser               = $user->getUsername();
 		$this->view->currentUser   = $currentUser;
-		//var_dump($currentUser); exit;
 
         $toolbar = $this->_owApp->toolbar;
         $toolbar->appendButton(OntoWiki_Toolbar::SUBMIT, array('name' => 'Register User'))

@@ -37,7 +37,7 @@ class ResourceController extends OntoWiki_Controller_Base {
         $response->setHeader('Last-Modified', date('r', $lastModArray['tstamp']), true);
     }
     
-    // Check setup for table exist or not if no create it
+    // UDFR - Abhi - Check setup for table exist or not if no create it
 	private function _checkSetup() {
         $this->_initialize();
     } 
@@ -186,8 +186,8 @@ class ResourceController extends OntoWiki_Controller_Base {
                 $namespaces = array_merge($namespaces, array($graphBase => OntoWiki_Utils::DEFAULT_BASE));
             }
             $this->view->namespaces = $namespaces;
-        }
-
+        }		
+		if (!$this->_checkClass()) { //UDFR - Abhi - If selected resource is not a class then show buttons
         $toolbar = $this->_owApp->toolbar;
         
         /*UDFR- Abhi- Add 'Review' button if Reviewer Action is granted */
@@ -255,6 +255,9 @@ class ResourceController extends OntoWiki_Controller_Base {
 
         //show modules
         $this->addModuleContext('main.window.properties');
+		} else {
+			//UDFR - Abhi - do not show any button
+		}
     }
 
     /**
@@ -382,7 +385,7 @@ class ResourceController extends OntoWiki_Controller_Base {
         // build toolbar
         /*
          * toolbar disabled for 0.9.5 (reactived hopefully later :) ) */
-
+		/* //UDFR -Abhi - Do not add any button like Add Instance here
             if ($graph->isEditable()) {
                 $toolbar = $this->_owApp->toolbar;
                 $toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array('name' => 'Add Instance', 'class' => 'init-resource'));
@@ -394,7 +397,7 @@ class ResourceController extends OntoWiki_Controller_Base {
                         // ->prependButton(OntoWiki_Toolbar::SAVE);
                 $this->view->placeholder('main.window.toolbar')->set($toolbar);
             }
-        /*
+        
             
             $url = new OntoWiki_Url(
                 array(
@@ -708,5 +711,42 @@ class ResourceController extends OntoWiki_Controller_Base {
         echo $serializer->serializeResourceToString($resource, $modelUri, false, true, $additional);
         $response->sendResponse();
         exit;
+    }
+
+	//UDFR - Abhi - check if selected resource is class or instance
+	private function _checkClass() {
+		$resource   = $this->_owApp->selectedResource;
+		$query = Erfurt_Sparql_SimpleQuery::initWithString(
+                    'SELECT * 
+                     FROM <' . (string)$this->_owApp->selectedModel . '> 
+                     WHERE {
+                        <' . $resource . '> a ?type  .  
+                     }'
+                );
+		$results[] = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
+
+		$query = Erfurt_Sparql_SimpleQuery::initWithString(
+			'SELECT * 
+			 FROM <' . (string)$this->_owApp->selectedModel . '>
+			 WHERE {
+				?inst a <' . $resource . '> .    
+			 } LIMIT 2'
+		);
+
+		if ( sizeof($this->_owApp->erfurt->getStore()->sparqlQuery($query)) > 0 ) {
+			$hasInstances = true;
+		} else {
+			$hasInstances = false;
+		}
+		$typeArray = array();
+		foreach ($results[0] as $row) {
+			$typeArray[] = $row['type'];
+		}
+		if (in_array(EF_RDFS_CLASS, $typeArray) ||
+			in_array(EF_OWL_CLASS, $typeArray)  ||
+			$hasInstances
+		) {
+			return true;
+		} else return false;
     }
 }
