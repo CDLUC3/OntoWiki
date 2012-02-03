@@ -133,7 +133,7 @@ class ModellistModule extends OntoWiki_Module
     }
 
     public function getTitle() {
-        return "Select Knowledge Bases"; // UDFR - Label changed from Knowledge Bases... Requirement
+        return "Select Knowledge Base"; // UDFR - Label changed from Knowledge Bases... Requirement
     }
 
 }
