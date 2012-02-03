@@ -36,12 +36,12 @@ class NavigationModule extends OntoWiki_Module
         // build main menu (out of sub menus below)
         $mainMenu = new OntoWiki_Menu();
 
-        // edit sub menu
+        /* edit sub menu // UDFR - Abhi - Restriction to create any new class or property
         if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
             $editMenu = new OntoWiki_Menu();
             $editMenu->setEntry('Add Resource here', "javascript:navigationAddElement()");
             $mainMenu->setEntry('Edit', $editMenu);
-        }
+        }*/
 
         // count sub menu
         $countMenu = new OntoWiki_Menu();
