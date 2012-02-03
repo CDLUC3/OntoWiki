@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * This file is part of the {@link http://ontowiki.net OntoWiki} project.
  *
@@ -120,13 +121,13 @@ class OntoWiki_Menu_Registry
         
         // extras sub menu
         $extrasMenu = new OntoWiki_Menu();
-
-        $extrasMenu->setEntry('News', $owApp->config->urlBase . 'index/news');
+		//UDFR - Abhi - Removed menu Extra->News 
+        //$extrasMenu->setEntry('News', $owApp->config->urlBase . 'index/news');
         
         // help sub menue
         $helpMenu = new OntoWiki_Menu();
-        $helpMenu->setEntry('Documentation', 'http://ontowiki.net/Projects/OntoWiki/Help')
-                 ->setEntry('Bug Report', 'http://code.google.com/p/ontowiki/issues/entry')
+        $helpMenu->setEntry('Documentation', 'http://udfr.org/docs/')
+                 ->setEntry('Bug Report', 'http://www.cdlib.org/services/uc3/contact.html')
                  ->setEntry(
                      'Version Info', 'http://ontowiki.net/Projects/OntoWiki/ChangeLog#'.
                      $owApp->config->version->number
