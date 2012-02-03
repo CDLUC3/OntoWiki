@@ -1085,7 +1085,7 @@ class ServiceController extends Zend_Controller_Action
 
         if ($workingMode == 'class') {
         	//UDFR - Abhi - Use different query if the model is not a Ontowiki system config model
-        	if ($modelIri != "http://localhost/OntoWiki/Config/") {
+        	if ($modelIri != $this->_config->ontowiki->model) {
             	$rawQuery = '
             	select distinct ?uri ?urilabel
 				where
@@ -1145,7 +1145,7 @@ class ServiceController extends Zend_Controller_Action
 			$properties = $model->sparqlQuery('SELECT ?uri ?value WHERE {
                 	<'.$parameter.'> ?uri ?value.
                 	} LIMIT 200 ', array('result_format' => 'extended'));
-        	if ($modelIri != "http://localhost/OntoWiki/Config/") {
+        	if ($modelIri != $this->_config->ontowiki->model) {
         		$rawQuery = 'select distinct ?uri ?urilabel
 				where
 				{<'.$parameter.'> <'.EF_RDF_TYPE.'> ?class.
@@ -1219,7 +1219,7 @@ class ServiceController extends Zend_Controller_Action
         
         if (!empty($properties)) {
         	// Abhi - UDFR - Adding properties by default (rdf:ype and rdfs:label)
-        	if ($modelIri != "http://localhost/OntoWiki/Config/" && $workingMode == 'class') {
+        	if ($modelIri != $this->_config->ontowiki->model && $workingMode == 'class') {
         	 	$value = new stdClass();
                 $value->value = $parameter;
                 $value->type = 'uri';

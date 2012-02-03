@@ -81,7 +81,9 @@ class ResourcecreationuriPlugin extends OntoWiki_Plugin
 				// UDFR - Abhi - add 1 more triple into newly created instance 
 				//				 if model is neither "Ontowiki System Config" and nor "udfr profile"
 				$baseUri = $gen->getCurrentModel();
-				if ($baseUri != 'http://localhost/OntoWiki/Config/' && $baseUri != 'http://www.udfr.org/profile/') {
+				$owApp = OntoWiki::getInstance();
+
+				if ($baseUri != $owApp->config->ontowiki->model && $baseUri != $owApp->config->profile->model) {
 					$len = strlen($newUri)-strlen($baseUri);
 					$noid = substr($newUri, strlen($baseUri), $len);
 					$noidArray = array();

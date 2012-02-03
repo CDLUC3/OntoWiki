@@ -48,7 +48,7 @@
         <!--UDFR - Abhi - User Profile task requirement-->
 		<td class="user-detail">
 		<?php $url= $this->url ; $useruri = $this->userArray[$abschnitt['useruri']]; if($useruri != "Anonymous") { if($useruri != "Admin") {
-		echo '<a title="Click to open profile" href="javascript:callme(' . '\'' . $this->userArray[$abschnitt['useruri']]. '\' , \''.$url .  '\''.');">' .$this->userArray[$abschnitt['useruri']].' </a>';
+		echo '<a title="Click to open profile" href="javascript:callme(' . '\'' . $useruri. '\' , \''.$url .  '\''. ', \''.$this->profile .  '\''.');">' .$useruri.' </a>';
 		} else { echo $this->userArray[$abschnitt['useruri']]; } } else { echo $this->userArray[$abschnitt['useruri']]; } ?>
 		</td>
         <td>
@@ -85,7 +85,7 @@
     });
 	
 	//UDFR - Abhi - User Profile task requirements
-	function callme(username, url) {
+	function callme(username, url, profile) {
 		var height = $(document).height();
         var width = $(document).width();
 		$('#userdetail-popup').remove();
@@ -96,7 +96,7 @@
 		$('#userdetail-popup').css("left", 473);
 		$('#back-overlay').css("height", height);
 		$('#back-overlay').css("width", width);
-		var model = 'http://www.udfr.org/profile/';
+		var model = profile;
 		var query = "SELECT * WHERE {<"+model+username+"> ?p ?o}&default-graph-uri="+model;
   
 		// Fires the ajax request
@@ -112,28 +112,28 @@
 					var max = bindings.length;
 					if (max > 0) {
 					for (var i = 0; i < max; i++) {
-						if ( bindings[i].p.value == "http://www.udfr.org/profile/userName") {
+						if ( bindings[i].p.value == profile+"userName") {
 							$('#userdetail-popup').append('<p><b>Username :  </b> '+bindings[i].o.value+'</p>');
 						} 
 					} 
 					for (var i = 0; i < max; i++) {
-						if ( bindings[i].p.value == "http://www.udfr.org/profile/jobTitle") {
-							$('#userdetail-popup').append('<p><b>Title &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:  </b>'+bindings[i].o.value+'</p>');
+						if ( bindings[i].p.value == profile+"jobTitle") {
+							$('#userdetail-popup').append('<p><b>Title &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp:  </b>'+bindings[i].o.value+'</p>');
 						}
 					}
 					for (var i = 0; i < max; i++) {
-						if ( bindings[i].p.value == "http://www.udfr.org/profile/orgAffiliation") {
+						if ( bindings[i].p.value == profile+"orgAffiliation") {
 							$('#userdetail-popup').append('<p><b>Affiliation &nbsp:  </b>'+bindings[i].o.value+'</p>');
 						}
 					}	
 					for (var i = 0; i < max; i++) { 
-						if ( bindings[i].p.value == "http://www.udfr.org/profile/website") {
+						if ( bindings[i].p.value == profile+"website") {
 							$('#userdetail-popup').append('<p><b>Website &nbsp&nbsp&nbsp&nbsp:  </b> <a onclick=window.open("http://'+bindings[i].o.value+'");>'+bindings[i].o.value+'</a></p>');
 						}
 					}
 					for (var i = 0; i < max; i++) { 
-						if (bindings[i].p.value == "http://www.udfr.org/profile/notes") {
-							$('#userdetail-popup').append('<p><b>Note &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
+						if (bindings[i].p.value == profile+"notes") {
+							$('#userdetail-popup').append('<p><b>Note &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp :  </b> '+bindings[i].o.value+'</p>');
 						}
 					}
 					$('#userdetail-popup').children('p').css("margin", 10);

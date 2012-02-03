@@ -347,19 +347,19 @@ class ResourceUriGenerator {
 		// UDFR - ABHI - Give a noid id to every newly created instance if model is neither "Ontowiki System Config" and nor "udfr profile"
 		$checkUri = true; //UDFR - ABHI - flag for checking the model
         $baseUri = $this->_model->getBaseUri();
-		
-		if ($baseUri != 'http://localhost/OntoWiki/Config/' && $baseUri != 'http://www.udfr.org/profile/') {
+
+		if ($baseUri != $this->_owApp->config->ontowiki->model && $baseUri != $this->_owApp->config->profile->model) {
 			$checkUri = true;
-			$fp = fsockopen($this->_config->noidServer->hostName, $this->_config->noidServer->port, $errno, $errstr, 30);
+			$fp = fsockopen($this->_owApp->config->noidServer->hostName, $this->_owApp->config->noidServer->port, $errno, $errstr, 30);
 
 			if (!$fp) {
 				echo "$errstr ($errno)<br />\n";
 			} else {
 				// UDFR - ABHI - noid has two shoulders 'u1f' and 'u1r'. if class is subclass format then call 'u1f' and all rest 'u1r'.
 				if($uriParts['type'] == 'File_format' || $uriParts['type'] == 'Encoding' || $uriParts['type'] == 'Compression') {
-					$out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1f. " HTTP/1.0\r\n";
-				} else $out = "GET http://" . $this->_config->noidServer->hostName . $this->_config->noidServer->u1r . " HTTP/1.0\r\n";
-				$out .= "Host: ".$this->_config->noidServer->hostName."\r\n";
+					$out = "GET http://" . $this->_owApp->config->noidServer->hostName . $this->_owApp->config->noidServer->u1f. " HTTP/1.0\r\n";
+				} else $out = "GET http://" . $this->_owApp->config->noidServer->hostName . $this->_owApp->config->noidServer->u1r . " HTTP/1.0\r\n";
+				$out .= "Host: ".$this->_owApp->config->noidServer->hostName."\r\n";
 				$out .= "Connection: Close\r\n\r\n";
 				fwrite($fp, $out);
 				

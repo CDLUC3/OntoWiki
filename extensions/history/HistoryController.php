@@ -197,7 +197,7 @@ class HistoryController extends OntoWiki_Controller_Component
         $rUriEncoded = urlencode((string)$resource);
         $mUriEncoded = urlencode((string)$model);
         $feedUrl = $this->_config->urlBase . "history/feed?r=$rUriEncoded&mUriEncoded";
-        
+        $this->view->profile = $this->_config->profile->model; //UDFR - Abhi
         $this->view->headLink()->setAlternate($feedUrl, 'application/atom+xml', 'History Feed');
 
         // redirecting to home if no model/resource is selected
