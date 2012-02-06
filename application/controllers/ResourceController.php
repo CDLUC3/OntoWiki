@@ -217,8 +217,26 @@ class ResourceController extends OntoWiki_Controller_Base {
                 $this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel)
         ) {
             // TODO: check acl
-            $toolbar->appendButton(OntoWiki_Toolbar::EDIT, array('name' => 'Edit Properties'));
-
+			$query = Erfurt_Sparql_SimpleQuery::initWithString(
+					'SELECT distinct ?cl 
+					 FROM <' . (string)$this->_owApp->selectedModel . '>
+					 WHERE {
+						<' . $resource . '>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?cl .    
+					 } LIMIT 1'
+					);
+			$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
+			$myClass = $cl[0]['cl'];
+			if (strrchr($myClass, "#")){
+				$search = strrchr($myClass, "#");
+				$wordType = preg_match("/Type/i", $search);
+			}
+			else if (strrchr($myClass, "/")) {
+				$search = strrchr($myClass, "/");
+				$wordType = preg_match("/Type/i", $search);
+			}
+			if (!$wordType) {		
+				$toolbar->appendButton(OntoWiki_Toolbar::EDIT, array('name' => 'Edit Properties'));
+			}
             $toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
                 'name'  => 'Clone',
                 'class' => 'clone-resource'
