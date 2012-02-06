@@ -374,6 +374,25 @@ class ServiceController extends Zend_Controller_Action
                      // ->prependEntry('Create Instance', $this->_config->urlBase . 'index/create/?r=')
                      // ->prependEntry('Create Subclass', $this->_config->urlBase . 'index/create/?r=');
                 } else if ($this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel) ) {
+					// UDFR - Abhi - query gets the uri of its class 
+					$query = Erfurt_Sparql_SimpleQuery::initWithString(
+							'SELECT distinct ?cl 
+							 FROM <' . (string)$this->_owApp->selectedModel . '>
+							 WHERE {
+								<' . $resource . '>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?cl .    
+							 } LIMIT 1'
+					);
+					$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
+					$myClass = $cl[0]['cl'];
+					if (strrchr($myClass, "#")){
+						$search = strrchr($myClass, "#");
+						$wordType = preg_match("/Type/i", $search);
+					}
+					else if (strrchr($myClass, "/")) {
+						$search = strrchr($myClass, "/");
+						$wordType = preg_match("/Type/i", $search);
+					}
+					
 					if ($isModel) {
 						//$url->setParam('m',$resource,false);  // UDFR - Abhi - NO need for this
 						//$menu->prependEntry( 'Delete Resource', (string) $url ); // UDFR - ABHI - NO need for this
@@ -384,7 +403,10 @@ class ServiceController extends Zend_Controller_Action
 						// UDFR - ABHI - Confirm with user before delete 
 						$menu->prependEntry( 'Delete Resource', 'javascript:deleteResource(\''.(string) $resource.'\')' );
 					}
-					$menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
+					// UDFR - ABhi - Show Edit Resource if its class uri does not has word "Type"
+					if (!$wordType) {
+						$menu->prependEntry('Edit Resource', 'javascript:editResourceFromURI(\''.(string) $resource.'\')');
+					}
 				}
             }
 			
