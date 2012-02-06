@@ -222,7 +222,7 @@ class ResourceController extends OntoWiki_Controller_Base {
 					 FROM <' . (string)$this->_owApp->selectedModel . '>
 					 WHERE {
 						<' . $resource . '>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?cl .    
-					 } LIMIT 1'
+					 } ORDER BY ASC(?cl) LIMIT 2'
 					);
 			$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
 			$myClass = $cl[0]['cl'];

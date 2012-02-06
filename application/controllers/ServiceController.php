@@ -380,9 +380,9 @@ class ServiceController extends Zend_Controller_Action
 							 FROM <' . (string)$this->_owApp->selectedModel . '>
 							 WHERE {
 								<' . $resource . '>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?cl .    
-							 } LIMIT 1'
+							 } ORDER BY ASC(?cl) LIMIT 2'
 					);
-					$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
+					$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query); var_dump($cl);exit;//udfr-abhi
 					$myClass = $cl[0]['cl'];
 					if (strrchr($myClass, "#")){
 						$search = strrchr($myClass, "#");
