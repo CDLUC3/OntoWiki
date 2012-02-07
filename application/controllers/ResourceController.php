@@ -189,8 +189,31 @@ class ResourceController extends OntoWiki_Controller_Base {
         }
 		$models = array_keys($this->_owApp->erfurt->getStore()->getAvailableModels(true));
         $isModel = in_array($resource, $models);
-		if (!$this->_checkClass() && !$isModel) { //UDFR - Abhi - If selected resource is not a class then show buttons
-        $toolbar = $this->_owApp->toolbar;
+		$checkClass = $this->_checkClass();
+		$wordType = 0;
+		$this->view->isModel = $isModel;
+		$this->view->checkClass = $checkClass;
+		if (!$checkClass && !$isModel) { //UDFR - Abhi - If selected resource is not a class then show buttons
+        $query = Erfurt_Sparql_SimpleQuery::initWithString(
+					'SELECT distinct ?cl 
+					 FROM <' . (string)$this->_owApp->selectedModel . '>
+					 WHERE {
+						<' . $resource . '>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?cl .    
+					 } ORDER BY ASC(?cl) LIMIT 2'
+					);
+		$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
+		$myClass = $cl[0]['cl'];
+		if (strrchr($myClass, "#")){
+			$search = strrchr($myClass, "#");
+			$wordType = preg_match("/Type/i", $search);
+		}
+		else if (strrchr($myClass, "/")) {
+			$search = strrchr($myClass, "/");
+			$wordType = preg_match("/Type/i", $search);
+		}
+		$this->view->wordType = $wordType;
+		if (!$wordType) {
+		$toolbar = $this->_owApp->toolbar;
         
         /*UDFR- Abhi- Add 'Review' button if Reviewer Action is granted */
 		if ($this->_erfurt->getAc()->isActionAllowed('Review')) {
@@ -223,24 +246,8 @@ class ResourceController extends OntoWiki_Controller_Base {
                 'name'  => 'Clone',
                 'class' => 'clone-resource'
             ));
-			$query = Erfurt_Sparql_SimpleQuery::initWithString(
-					'SELECT distinct ?cl 
-					 FROM <' . (string)$this->_owApp->selectedModel . '>
-					 WHERE {
-						<' . $resource . '>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?cl .    
-					 } ORDER BY ASC(?cl) LIMIT 2'
-					);
-			$cl = $this->_owApp->erfurt->getStore()->sparqlQuery($query);
-			$myClass = $cl[0]['cl'];
-			if (strrchr($myClass, "#")){
-				$search = strrchr($myClass, "#");
-				$wordType = preg_match("/Type/i", $search);
-			}
-			else if (strrchr($myClass, "/")) {
-				$search = strrchr($myClass, "/");
-				$wordType = preg_match("/Type/i", $search);
-			}
-			if (!$wordType) {		
+			
+					
 				$toolbar->appendButton(OntoWiki_Toolbar::EDIT, array('name' => 'Edit Properties'));
 				$params = array(
                     'name' => 'Delete',
@@ -248,7 +255,7 @@ class ResourceController extends OntoWiki_Controller_Base {
 				);
 				$toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
                     ->appendButton(OntoWiki_Toolbar::DELETE, $params);
-			}
+			
             
             // ->appendButton(OntoWiki_Toolbar::EDITADD, array('name' => 'Add Property', 'class' => 'property-add'));
             
@@ -277,8 +284,10 @@ class ResourceController extends OntoWiki_Controller_Base {
 
         //show modules
         $this->addModuleContext('main.window.properties');
+		}
 		} else {
-			//UDFR - Abhi - do not show any button
+			//UDFR - Abhi - do not show any button && set wordType variable for edit icon
+			$this->view->wordType = $wordType;
 		}
     }
 
