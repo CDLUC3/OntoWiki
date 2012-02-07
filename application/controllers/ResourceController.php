@@ -186,8 +186,10 @@ class ResourceController extends OntoWiki_Controller_Base {
                 $namespaces = array_merge($namespaces, array($graphBase => OntoWiki_Utils::DEFAULT_BASE));
             }
             $this->view->namespaces = $namespaces;
-        }		
-		if (!$this->_checkClass()) { //UDFR - Abhi - If selected resource is not a class then show buttons
+        }
+		$models = array_keys($this->_owApp->erfurt->getStore()->getAvailableModels(true));
+        $isModel = in_array($resource, $models);
+		if (!$this->_checkClass() && !$isModel) { //UDFR - Abhi - If selected resource is not a class then show buttons
         $toolbar = $this->_owApp->toolbar;
         
         /*UDFR- Abhi- Add 'Review' button if Reviewer Action is granted */
@@ -217,6 +219,10 @@ class ResourceController extends OntoWiki_Controller_Base {
                 $this->_owApp->erfurt->getAc()->isModelAllowed('edit', $this->_owApp->selectedModel)
         ) {
             // TODO: check acl
+			$toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
+                'name'  => 'Clone',
+                'class' => 'clone-resource'
+            ));
 			$query = Erfurt_Sparql_SimpleQuery::initWithString(
 					'SELECT distinct ?cl 
 					 FROM <' . (string)$this->_owApp->selectedModel . '>
@@ -236,18 +242,16 @@ class ResourceController extends OntoWiki_Controller_Base {
 			}
 			if (!$wordType) {		
 				$toolbar->appendButton(OntoWiki_Toolbar::EDIT, array('name' => 'Edit Properties'));
-			}
-            $toolbar->appendButton(OntoWiki_Toolbar::EDITADD, array(
-                'name'  => 'Clone',
-                'class' => 'clone-resource'
-            ));
-            // ->appendButton(OntoWiki_Toolbar::EDITADD, array('name' => 'Add Property', 'class' => 'property-add'));
-            $params = array(
+				$params = array(
                     'name' => 'Delete',
                     'url'  => 'javascript:deleteResource(\''.(string) $resource.'\')'
-            );
-            $toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
+				);
+				$toolbar->appendButton(OntoWiki_Toolbar::SEPARATOR)
                     ->appendButton(OntoWiki_Toolbar::DELETE, $params);
+			}
+            
+            // ->appendButton(OntoWiki_Toolbar::EDITADD, array('name' => 'Add Property', 'class' => 'property-add'));
+            
 			/* UDFR - Abhi - not a requirement
             $toolbar->prependButton(OntoWiki_Toolbar::SEPARATOR)
                     ->prependButton(OntoWiki_Toolbar::ADD, array('name' => 'Add Property', '+class' => 'property-add'));
