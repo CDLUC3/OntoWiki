@@ -258,11 +258,14 @@ class ServiceController extends Zend_Controller_Action
                         array('controller' => 'model', 'action' => 'config'),
                         array()
                     );
-                    $url->setParam('m',$resource,false);
-                    $menu->prependEntry(
-                        'Configure Knowledge Base',
-                        (string)$url
-                    );
+					//UDFR - ABhi - Only Admin has grant access of ModelManagement
+					if ($this->_owApp->erfurt->getAc()->isActionAllowed('ModelManagement')) { //UDFR - ABhi - Only Admin has grant access of ModelManagement
+						$url->setParam('m',$resource,false);
+						$menu->prependEntry(
+							'Configure Knowledge Base',
+							(string)$url
+						);
+					}
                 }
                 
 
