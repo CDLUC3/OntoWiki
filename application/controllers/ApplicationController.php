@@ -293,7 +293,7 @@ class ApplicationController extends OntoWiki_Controller_Base
                 isset($actionConfig['uidregexp']) &&
                 !preg_match($actionConfig['uidregexp'], $username)
             ) {
-                $message    = 'Username contains illegal characters.';
+                $message    = 'Username contains illegal characters (e.g. @ $ % & * # ( ) <space> are not allowed)';
                 $this->_owApp->appendMessage(new OntoWiki_Message($message, OntoWiki_Message::ERROR));
             } else if ($password !== $passwordTwo) {
                 $message    = 'Passwords do not match.';
