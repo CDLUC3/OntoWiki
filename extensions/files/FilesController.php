@@ -299,7 +299,7 @@ class FilesController extends OntoWiki_Controller_Component
 
                     // add file resource as instance in local model
                     $store->addStatement(
-                        (string) $this->_owApp->selectedModel,
+                        $udfrBaseUri,
                         $fileUri,
                         EF_RDF_TYPE,
                         array('value' => $fileClassLocal, 'type' => 'uri')
@@ -325,7 +325,7 @@ class FilesController extends OntoWiki_Controller_Component
                         (string) $this->_getConfigModelUri(),
                         $fileUri,
                         $fileModel,
-                        array('value' => (string) $this->_owApp->selectedModel, 'type' => 'uri'),
+                        array('value' => $udfrBaseUri, 'type' => 'uri'),
                         false
                     );
 					//add new instance of onto/File
