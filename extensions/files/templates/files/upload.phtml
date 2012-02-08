@@ -42,6 +42,16 @@ if (isset($this->setResource)) {
             <?php echo $readOnlyFlag ?>
         />
     </div>
+	<div>
+		<label for="file_name"><?php echo $this->_('File Label') ?><span style="color:red">&nbsp*</span></label>
+		<input type="text" class="text prefix-value" name="file_name" />
+		<br class="clearall" />
+	</div>
+	<div>
+		<label for="file_description"><?php echo $this->_('File Description') ?></label>
+		<input type="text" class="text prefix-value" name="file_description" />
+		<br class="clearall" />
+	</div>
     <div>
         <label for="file-input">
             <?php echo sprintf($this->_('File (max. %1$sB)'), preg_replace('/([kMG])/', ' $1', ini_get('upload_max_filesize'))) ?>
@@ -49,4 +59,5 @@ if (isset($this->setResource)) {
         <input type="file" id="file-input" name="upload" />
         <br class="clearall" />
     </div>
+	
 </fieldset>

@@ -143,7 +143,7 @@ class FilesController extends OntoWiki_Controller_Component
             )
             ->setOrderClause('?uri')
             ->setLimit(10); // TODO: paging
-
+		
         if ($result = $store->sparqlQuery($query, array('use_ac' => false))) {
             $files = array();
             foreach ($result as $row) {
@@ -228,13 +228,15 @@ class FilesController extends OntoWiki_Controller_Component
 
         // check for POST'ed data
         if ($this->_request->isPost()) {
+			if (!empty ($_POST['file_name'])) {
+			 
             if ($_FILES['upload']['error'] == UPLOAD_ERR_OK) {
                 // upload ok, move file
                 $fileUri  = $this->_request->getPost('file_uri');
                 $fileName = $_FILES['upload']['name'];
                 $tmpName  = $_FILES['upload']['tmp_name'];
                 $mimeType = $_FILES['upload']['type'];
-
+ 
                 // check for unchanged uri
                 if ($fileUri == $defaultUri) {
                     $fileUri = $defaultUri
@@ -243,17 +245,22 @@ class FilesController extends OntoWiki_Controller_Component
                 }
 
                 // build path
+				$suffixType = substr($fileName, strrpos($fileName, '.'));
                 $pathHashed = $this->getFullPath($fileUri);
 
                 // move file
                 if (move_uploaded_file($tmpName, $pathHashed)) {
-                    $mimeProperty = $this->_privateConfig->mime->property;
-                    $fileClass    = $this->_privateConfig->class;
-                    $fileModel    = $this->_privateConfig->model;
-
+                    $mimeProperty 		= $this->_privateConfig->mime->property;
+                    $fileClass    		= $this->_privateConfig->class;
+                    $fileModel    		= $this->_privateConfig->model;
+					$udfrBaseUri  		= $this->_privateConfig->udfr->baseUri;
+					$udfrsFile 	  		= $this->_privateConfig->udfrs->File;
+					$udfrsFileLocation 	= $this->_privateConfig->udfrs->fileLocation;
+					$dctDescription 	= $this->_privateConfig->dct->description;
+					$currentNoid 		= $this->noidId();
                     // use super class as default
                     $fileClassLocal = 'http://xmlns.com/foaf/0.1/Document';
-
+					
                     // use mediaType-ontologie if available
                     if ($store->isModelAvailable($dmsNs)) {
                         $allTypes = $store->sparqlQuery(
@@ -321,7 +328,37 @@ class FilesController extends OntoWiki_Controller_Component
                         array('value' => (string) $this->_owApp->selectedModel, 'type' => 'uri'),
                         false
                     );
-
+					//add new instance of onto/File
+					$store->addStatement(
+                        $udfrBaseUri,
+                        $udfrBaseUri.$currentNoid,
+                        EF_RDF_TYPE,
+                        array('value' => $udfrsFile, 'type' => 'uri'),
+                        false
+                    );
+					$store->addStatement(
+                        $udfrBaseUri,
+                        $udfrBaseUri.$currentNoid,
+                        EF_RDFS_LABEL,
+                        array('value' => $_POST['file_name'], 'type' => 'literal'),
+                        false
+                    );
+					if (!empty ($_POST['file_description'])) {
+						$store->addStatement(
+							$udfrBaseUri,
+							$udfrBaseUri.$currentNoid,
+							$dctDescription,
+							array('value' => $_POST['file_description'], 'type' => 'literal'),
+							false
+						);
+					}
+					$store->addStatement(
+						$udfrBaseUri,
+						$udfrBaseUri.$currentNoid,
+						$udfrsFileLocation,
+						array('value' => $fileUri, 'type' => 'literal'),
+						false
+					);
                     if (isset($this->_request->setResource)) {
                         $this->_owApp->appendMessage(
                             new OntoWiki_Message('File attachment added', OntoWiki_Message::SUCCESS)
@@ -333,10 +370,16 @@ class FilesController extends OntoWiki_Controller_Component
                         $url->action = 'manage';
                         $this->_redirect((string) $url);
                     }
-                }
+                
+				}
             } else {
                 $this->_owApp->appendMessage(
                     new OntoWiki_Message('Error during file upload.', OntoWiki_Message::ERROR)
+                );
+            }
+			} else {
+                $this->_owApp->appendMessage(
+                    new OntoWiki_Message('Please enter File Label.', OntoWiki_Message::ERROR)
                 );
             }
         }
@@ -458,5 +501,26 @@ class FilesController extends OntoWiki_Controller_Component
         }
         return $mimeType;
     }
+	
+	public function noidId()
+	{
+		$fp = fsockopen($this->_owApp->config->noidServer->hostName, $this->_owApp->config->noidServer->port, $errno, $errstr, 30);
+
+			if (!$fp) {
+				echo "$errstr ($errno)<br />\n";
+			} else {
+					$out = "GET http://" . $this->_owApp->config->noidServer->hostName . $this->_owApp->config->noidServer->u1r . " HTTP/1.0\r\n";
+					$out .= "Host: ".$this->_owApp->config->noidServer->hostName."\r\n";
+					$out .= "Connection: Close\r\n\r\n";
+					fwrite($fp, $out);
+					
+					while (!feof($fp)) {
+						$noid = fgets($fp, 128); 				
+					}
+					fclose($fp);
+			}
+			$noid = trim($noid);
+			return $noid;
+	}
 }
 

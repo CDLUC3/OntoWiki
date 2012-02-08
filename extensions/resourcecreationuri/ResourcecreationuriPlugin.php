@@ -89,7 +89,7 @@ class ResourcecreationuriPlugin extends OntoWiki_Plugin
 					$noidArray = array();
 					$noidArray['type'] = 'literal';
 					$noidArray['value'] = $noid;
-					$temp[$newUri]['http://www.udfr.org/onto/udfrIdentifier'][0] = $noidArray;					
+					$temp[$newUri][$owApp->config->udfr->indentifier][0] = $noidArray;					
 				}
                 $this->insertData = $temp;
                 $flag = true;
