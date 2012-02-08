@@ -743,6 +743,22 @@ class ResourceController extends OntoWiki_Controller_Base {
         $response->sendResponse();
         exit;
     }
+	
+	// UDFR - Abhi redirect task
+	public function selectAction() {
+		if (isset($this->_request->m) && isset($this->_request->r)) {            
+            // reset resource/class
+            unset($this->_owApp->selectedResource);
+            unset($this->_owApp->selectedClass);
+            unset($this->_session->hierarchyOpen);
+            
+            OntoWiki_Navigation::disableNavigation();
+			
+			$this->_owApp->selectedResource = new OntoWiki_Resource($this->_request->getParam('m'), $this->_owApp->selectedModel);
+			$this->_redirect($this->_config->urlBase . 'resource/properties/?r=' .$this->_request->getParam('r') , array('code' => 302));
+		} 
+
+	}
 
 	//UDFR - Abhi - check if selected resource is class or instance
 	private function _checkClass() {
