@@ -18,7 +18,6 @@
     </tr>
     
     <?php $i = 0 ?>
-	<?php if (!empty ($this->files)) :?>
     <?php foreach ($this->files as $file): ?>
         <tr>
             <td class="selector">
@@ -29,8 +28,5 @@
             <td><?php echo $file['mime_type'] ?></td>
         </tr>
     <?php endforeach; ?>
-	<?php else :?> <tr><td></td><td></td><td style="color:red">There are no files associated with this model.</td></tr>
-	<tr><td></td><td></td> <td style="color:red">Please select the UDFR model to see files associated with the UDFR registry. </td></tr>
-	<?php endif?>
 </table>
 

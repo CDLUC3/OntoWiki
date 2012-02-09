@@ -129,7 +129,8 @@ class FilesController extends OntoWiki_Controller_Component
         $fileClass    = $this->_privateConfig->class;
         $fileModel    = $this->_privateConfig->model;
         $store        = $this->_owApp->erfurt->getStore();
-
+		$selectedModel= (string) $this->_owApp->selectedModel;
+		$udfrBaseUri  = $this->_privateConfig->udfr->baseUri;
         $query = new Erfurt_Sparql_SimpleQuery();
         $query->setProloguePart('SELECT DISTINCT ?mime_type ?uri')
             ->addFrom((string) $this->_getConfigModelUri())
@@ -154,7 +155,21 @@ class FilesController extends OntoWiki_Controller_Component
             $this->view->files = $files;
         } else {
             $this->view->files = array();
-        }
+			if (empty ($files)) {
+				if ($selectedModel == $udfrBaseUri) {
+					$this->_owApp->appendMessage(
+                            new OntoWiki_Message('There are no uploaded files.
+							', OntoWiki_Message::INFO)
+                        );
+				} else {
+				$this->_owApp->appendMessage(
+                            new OntoWiki_Message('All uploaded files are saved in the UDFR model.
+							Please select the UDFR model to see files associated with the UDFR registry.
+							', OntoWiki_Message::INFO)
+                        );
+				}
+			}
+		}
 
         $this->view->placeholder('main.window.title')->set($this->_owApp->translate->_('File Manager'));
         OntoWiki_Navigation::disableNavigation();
@@ -222,13 +237,24 @@ class FilesController extends OntoWiki_Controller_Component
         if ($store->isModelAvailable($dmsNs) && $this->_privateConfig->import_DMS) {
             $this->_checkDMS();
         }
+		$udfrBaseUri  = $this->_privateConfig->udfr->baseUri;
+		$selectedModel= (string) $this->_owApp->selectedModel;
+		if ($selectedModel != $udfrBaseUri) {
+				$this->_owApp->appendMessage(
+							new OntoWiki_Message('All uploaded files will be saved in the UDFR model.
+							Please select the UDFR model to see a list of your uploaded files.
+							', OntoWiki_Message::WARNING)
+						);
+			}
 
 
         $url = new OntoWiki_Url(array('controller' => 'files', 'action' => 'upload'), array());
 
         // check for POST'ed data
         if ($this->_request->isPost()) {
-			if (!empty ($_POST['file_name'])) {
+			$currentNoid = $this->noidId();
+			if (!empty ($_POST['file_name'])) { 
+			if (preg_match("/u1r/i", $currentNoid)) {
 			 
             if ($_FILES['upload']['error'] == UPLOAD_ERR_OK) {
                 // upload ok, move file
@@ -257,7 +283,7 @@ class FilesController extends OntoWiki_Controller_Component
 					$udfrsFile 	  		= $this->_privateConfig->udfrs->File;
 					$udfrsFileLocation 	= $this->_privateConfig->udfrs->fileLocation;
 					$dctDescription 	= $this->_privateConfig->dct->description;
-					$currentNoid 		= $this->noidId();
+					
                     // use super class as default
                     $fileClassLocal = 'http://xmlns.com/foaf/0.1/Document';
 					
@@ -377,6 +403,11 @@ class FilesController extends OntoWiki_Controller_Component
                     new OntoWiki_Message('Error during file upload.', OntoWiki_Message::ERROR)
                 );
             }
+			} else {
+					$this->_owApp->appendMessage(
+                    new OntoWiki_Message('Error occured when get noid identifier. Please try again or check the noid server configuration.', OntoWiki_Message::ERROR)
+                );
+			}
 			} else {
                 $this->_owApp->appendMessage(
                     new OntoWiki_Message('Please enter File Label.', OntoWiki_Message::ERROR)
