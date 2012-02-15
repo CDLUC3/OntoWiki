@@ -356,9 +356,11 @@ class ResourceUriGenerator {
 				echo "$errstr ($errno)<br />\n";
 			} else {
 				// UDFR - ABHI - noid has two shoulders 'u1f' and 'u1r'. if class is subclass format then call 'u1f' and all rest 'u1r'.
-				if($uriParts['type'] == 'File_format' || $uriParts['type'] == 'Encoding' || $uriParts['type'] == 'Compression') {
+				if($uriParts['type'] == 'File_Format' || $uriParts['type'] == 'Encoding' || $uriParts['type'] == 'Compression') {
 					$out = "GET http://" . $this->_owApp->config->noidServer->hostName . $this->_owApp->config->noidServer->u1f. " HTTP/1.0\r\n";
-				} else $out = "GET http://" . $this->_owApp->config->noidServer->hostName . $this->_owApp->config->noidServer->u1r . " HTTP/1.0\r\n";
+				} else {
+					$out = "GET http://" . $this->_owApp->config->noidServer->hostName . $this->_owApp->config->noidServer->u1r . " HTTP/1.0\r\n";
+				}
 				$out .= "Host: ".$this->_owApp->config->noidServer->hostName."\r\n";
 				$out .= "Connection: Close\r\n\r\n";
 				fwrite($fp, $out);
