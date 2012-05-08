@@ -124,8 +124,9 @@ class OntoWiki_Controller_Base extends Zend_Controller_Action
             var RDFAUTHOR_BASE = "' . $this->_config->staticUrlBase . 'libraries/RDFauthor/";
 			var profileModel = "' . $this->_config->profile->model .'";
 			var ontowikiModel = "' . $this->_config->ontowiki->model .'";
-            var RDFAUTHOR_VIEW_MODE = "' . $viewMode . '";' . PHP_EOL;
-        
+            var udfrIdentifier = "' . $this->_config->udfr->indentifier .'";
+			var RDFAUTHOR_VIEW_MODE = "' . $viewMode . '";' . PHP_EOL;
+			
         if (defined('_OWDEBUG')) {
             $this->view->jsonVars .= '            var RDFAUTHOR_DEBUG = 1;';
         }
