@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "=//WC3//DTD HTML 3.2 Final//EN">
+
+<html>
+<head>
+<title>Unified Digital Format Registry (UDFR) - Functional Requirements</title>
+<meta name="description" content="Unified Digital Format Registry (UDFR) support"/>
+<meta name="keywords" content="unified,digital,format,registry,udfr,functional requirements"/>
+</head>
+
+<body style="background-color: #F3FAFF; font-family: Arial, Helvetica, sans-serif;">
+<p>
+  <span style="font-size:200%; font-weight: bold;">Unified Digital Format Registry (UDFR) - Functional Requirements</span>
+  <br/>
+  <span style="font-style: italic;">a semantic registry for digital preservation</span>
+<p>
+
+<hr/>
+<p style="font-size: 75%"><a href="..">Home</a> &gt;
+<a href=".">Project</a> &gt;
+Functional requirements</p>
+
+<h2>Functional Requirements</h2>
+
+<p>
+These requirements have been compiled from many sources: GDFR, the format registry working group, and the UDFR road map.  
+</p>
+
+<h3>Scope and Services</h3>
+
+<p>
+<ul>
+<li> Manage Identifiers
+<ul>
+<li> Use a controlled namespace for the unambiguous persistent public identification of digital formats</li>
+<li> Identifiers should support machine actionability as that is their primary use</li>
+<li> UDFR identifiers should be amenable for human purposes and resilient against transcription errors</li>
+</ul></li>
+<li> Provide public interfaces
+<ul>
+<li> Provide end-user interfaces for discovery and delivery of managed representation information for human and automated agents</li>
+<li> End-user service interfaces for discovery and delivery of representation information to human and automated agents (standardized web service interfaces)
+<ul>
+<li>These services should be usable by format identification tools external to the registry</li>
+<li>These services should be usable by other services external to the registry that support preservation planning and activities</li>
+</ul></li>
+<li> Distributed discovery, and delivery of representation information, providing high availability at any time from any place</li>
+<li> Guaranteed public access to the representation information</li>
+<ul>
+<li> Suppress from public view for a limited embargo period some representation information in order to protect proprietary, trade secret, or other legally-encumbered information</li>
+</ul></li></ul></li>
+<li>Provide storage
+<ul>
+<li> Storage of format representation information of as many different formats as possible</li>
+<li> Store sample files for each format created by different applications (e.g. a PDF produced by Adobe PDF Library 4.8)</li>
+<li> Store format specifications</li>
+<li> The UDFR will follow evolving best practices for the secure, sustainable management of format representation information</li>
+<li> Representation information should be replicated at one or more geographically dispersed locations </li>
+</ul></li>
+<li> Support distributed input of registry information
+<ul>
+<li> The input process should be easy to use but result in machine actionable output</li>
+</ul></li>
+</li> Support editorial oversight or some form of quality vetting of contributed registry information</li>
+<li> Support local copies of the registry
+<ul>
+<li> Ability to manage in the local copy of the registry local information that is not supposed to be shared with other registry instances. There are two goals for this requirement: manage in the local instance information that the institution has no right to share (information on software for example), manage information on local preferences (format preferences, local policies)</li>
+<li> For local registry instances: ability to express value assessment and priorities for using formats. For example: prefer .rtf than .doc, prefer TIFF than JPEG</li>
+<li> Provide a mechanism for the distribution of the registry data to the local instances</li>
+</ul></li>
+<li> Be maintained and sustained by a permanent governance body </li>
+</ul>
+</p>
+
+<h3>Data Model</h3>
+
+<p>
+<ul>
+<li>General
+<ul>
+<li> The UDFR representation information should be capable of expressing the descriptive, administrative, syntactic, semantic, and behavioral properties of formats pertinent to curation and preservation analysis, decision making, and activities</li>
+<li> All representation information will be tagged to indicate the level of centrally-coordinated review by the UDFR governing authority or its designees</li>
+All representation information will be tagged with provenance information sufficient to provide a complete audit trail of changes over time</li>
+<li> Support embargo metadata for representation information to protect proprietary, trade secret, or other legally-encumbered information</li> 
+</ul></li>
+<li> Identifiers
+<ul>
+<li> Support the binding of various typed representation information [ISO 14721] to format identifiers</li> 
+</ul></li>
+<li> Descriptive representation information
+<ul>
+<li> Descriptive representation information will include: a canonical UDFR identifier</li>
+<li> Descriptive representation information should include an arbitrary number of namespaced identifiers publicly associated with the format, such as MIME type, PUID, GDFR identifier, Apple UTI, Library of Congress FDD identifier, standard identifier (ANSI, ECMA, FNOR, ISO, ITU, NISO, etc.), IETF RFC identifier, IANA identifier, W3C recommendation identifier, etc.</li>
+<li> Descriptive representation information should include an arbitrary number of common names publicly associated with the format</li>
+<li> Descriptive representation information should include a format version identifier, as issued by the legitimate maintenance agency</li>
+<li> Descriptive representation information should include a short discursive description of the salient properties of the format</li>
+<li> Descriptive representation information should include a format classification providing a means to indicate a format's (using terminology drawn from the GDFR Format Classification) genre, role, composition, encoding form, constraint, basis, domain, transformative nature</li>
+<li> Descriptive representation information should include (using terminology drawn from the GDFR Format Model and Relationships) affinity, containment, definition, extension, modification, requisition, restriction, semantic equivalence, syntactic equivalence, version</li>
+<li> Descriptive representation information should include an arbitrary number of informative notes</li>
+</ul></li>
+<li> Administrative representation information
+<ul>
+<li> Administrative representation information should include the corporate or individual agent(s) that created the format, the corporate or individual agent(s) that hold the intellectual property rights to the format, the corporate or individual agent(s) responsible for format maintenance, the format creation or release date, the format withdrawal date, an indication of the IPR status of the format, an arbitrary number of informative notes documenting format administrative properties
+<ul>
+<li> Agents can be either corporate or individual</li> 
+</ul></ul></li>
+<li> Syntactic representation information
+<ul>
+<li> Syntactic representation information should include arbitrary number of typed external signatures; arbitrary number of internal signatures; an indication of byte ordering: big-endian, little-endian, either, both, or unknown; an arbitrary number of format grammars expressed in some formal notation, such as ABNF, BSDL, DFDL, EAST, XCEL, etc.; an arbitrary number of example files.; an arbitrary number of informative notes documenting format syntactic properties</li>
+</ul></li> 
+<li> Semantic representation information
+<ul>
+<li> Semantic representation information should include an arbitrary number of specification documents; an arbitrary number of format assessments expressed in some formal notation, such as Library of Congress FDD, etc.; an arbitrary number of informative notes documenting format semantic properties</li>
+</ul></li>
+<li> Behavioral representation information
+<ul>
+<li> Behavioral representation information should include an arbitrary number of format software dependencies, an arbitrary number of format hardware dependencies, an arbitrary number of format media dependencies, an arbitrary number of informative notes documenting format behavioral properties
+<ul>
+<li> Behavioral information should also include arbitrary number of software processes that are not necessarily dependencies (that is, they are not necessarily required in order to use the format) that accept a given format as an input or output. These processes should be typed with regard to their supported operation, e.g. validator, transformer, renderer, etc. --Abrams 21:26, 19 May 2010 (UTC)</li>
+</ul></ul></li> 
+<li> Documents
+<ul>
+<li> Documents can be described in terms of Title; Edition; Authoring agent(s); Publishing agent(s); Date of publication; an arbitrary number of formal identifiers, such as DDC, ICC, IEC, IETF BCP, IETF RFC, IETF STD, ISBN, ISO, ITU, LCCN, OCLC number, SICI, etc.; Document language; Document type; an indication of the IPR status of the document; an arbitrary number of informative notes documenting document properties; an arbitrary number of files that contain manifestations of the document content</li>
+</ul></li>
+<li> Files
+<ul>
+<li> Files can be described in terms of Name; File type, such as data, executable, object code, source code, etc.; an arbitrary number of typed message digest values, such as CRC-32, MD5, SHA-1, SHA-256, etc.; an indication of the IPR status of the file; Agent(s) who hold a copy of the file; an arbitrary number of informative notes documenting file properties</li>
+<li> Local holdings are described in terms of a locally-meaningful identifier, an indication of public accessibility to the file</li>
+</ul></li>
+<li> IPR status
+<ul>
+<li> IPR status can be described in terms of the agent holding the rights; the effective date of the rights claim; the expiry date of the rights claim; the legal jurisdiction in which the rights claim is made; the type of rights claim, such as copyright, patent, trade secret, etc.; license terms of use for the items covered under the rights claim; an arbitrary number of informative notes documenting the rights claim</li>
+</ul></li></ul>
+</p>
+
+<hr/>
+
+<p style="padding-right:5px; float:right; font-size:80%">
+      Copyright &copy; 2012, The Regents of the University of California |
+      Powered by <a href="http://ontowiki.net/Projects/OntoWiki">OntoWiki</a> |
+      <a href="../../ontowiki/udfrabout/termsofuse">Terms of use</a> |
+      <a href="../../ontowiki/udfrabout/privacypolicy">Privacy policy</a>
+    </p>
+    <p>
+      <img src="../../ontowiki/extensions/themes/silverblue/images/udfr.gif"
+           style="float:left; vertical-align:bottom;" alt="UDFR" />
+    </p>
+</p>
+
+</body>
+</html>
