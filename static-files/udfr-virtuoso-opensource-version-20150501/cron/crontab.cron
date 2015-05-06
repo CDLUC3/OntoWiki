@@ -1,0 +1,4 @@
+# full virtuoso backup
+30 18 * * 0 (cd /udfr/apps/virtuoso-opensource-version; /bin/csh -f cron/bin/weekly.csh >> cron/log/weekly.log 2>&1)
+# incremental virtuoso backup
+30 18 * * 1-6 (cd /udfr/apps/virtuoso-opensource-version; /bin/csh -f cron/bin/nightly.csh >> cron/log/nightly.log 2>&1)

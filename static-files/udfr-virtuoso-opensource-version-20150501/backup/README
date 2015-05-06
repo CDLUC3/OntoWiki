@@ -1,0 +1,32 @@
+
+Backup/Restore Virtuoso database (http://docs.openlinksw.com/virtuoso/backup.html)
+Also read the following for admin: http://docs.openlinksw.com/virtuoso/dbadm.html
+
+Procedure for backup of UDFR's Virtuoso DB
+------------------------------------------
+Performed by cron.  A weekly backup on Sunday night, and incremental on other nights.
+
+/udfr/apps/virtuoso-opensource-version/cron/bin/weekly.csh
+/udfr/apps/virtuoso-opensource-version/cron/bin/nightly.csh
+
+
+Procedure for restoring Virtuoso DB
+-----------------------------------
+a) remove virtuoso.trx and virtuoso.db from working area, usually located at
+    /apps/udfr/apps/virtuoso-opensource-version/var/lib/virtuoso/db/
+
+
+b) Then restart Virtuoso with:
+
+1) cd /apps/udfr/apps/virtuoso-opensource-version/backup/<weekly backup dir>
+2) /apps/udfr/apps/virtuoso-opensource-version/bin/virtuoso-t \
+	-c /apps/udfr/apps/virtuoso-opensource-version/var/lib/virtuoso/ontowiki/virtuoso.ini 
+	+restore-backup virt-inc_dump_# 
+
+This will restore the virtuoso.db 
+
+c) To restore transaction files, copy necessary files to top-level virt. directory and use the replay command.
+    For example,
+
+    replay ('virtuoso20120207124908.trx');
+
