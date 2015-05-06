@@ -1,0 +1,52 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: apache2-uc3
+# Required-Start: $local_fs $network $remote_fs
+# Should-Start: ypbind nscd ntpd xntpd
+# Required-Stop: $local_fs $network $remote_fs
+# Default-Start: 2 3 5
+# Default-Stop: 0 1 2 6
+# Description: Start and stop Apache on port 18880 for UC3 application
+### END INIT INFO
+#
+
+# This file is managed by Puppet. DO NOT attempt to edit the local copy. See
+# https://confluence.ucop.edu/display/UC3/UC3+Puppet for details.
+
+
+appDir="/udfr/apps/apache"
+
+case "$1" in
+    graceful)
+        /bin/su - udfr -c "$appDir/bin/apachectl graceful" 
+        ;;
+    restart)
+        /bin/su - udfr -c "$appDir/bin/apachectl restart"
+        ;;
+    start)
+        /bin/su - udfr -c "$appDir/bin/apachectl start"
+        ;;
+    stop)
+        /bin/su - udfr -c "$appDir/bin/apachectl stop"
+        ;;
+    status)
+        if [ -f $appDir/apache.pid ] ; then
+          if kill -0 `cat < $appDir/apache.pid` 2>/dev/null ; then
+            exit 0
+          else
+            exit 2
+          fi
+        else
+          exit 3
+        fi
+        ;;
+    showMe)
+    	echo $appDir/bin/apachectl $1
+    	exit
+	;;
+    *)
+        echo "Usage: $0 {graceful|restart|start|stop|status|showMe}"
+        exit 1
+        ;;
+esac
+exit 0

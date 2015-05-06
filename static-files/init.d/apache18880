@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# This file is managed by Puppet. DO NOT attempt to edit the local copy. See
+# https://confluence.ucop.edu/display/UC3/UC3+Puppet for details.
+
+appDir=$HOME/apps/apache
+
+case "$1" in
+    graceful)
+        $appDir/bin/apachectl graceful 
+        ;;
+    restart)
+        $appDir/bin/apachectl restart
+        ;;
+    start)
+        $appDir/bin/apachectl start
+        ;;
+    stop)
+        $appDir/bin/apachectl stop
+        ;;
+    status)
+        if [ -f $appDir/apache.pid ] ; then
+          if kill -0 `cat < $appDir/apache.pid` 2>/dev/null ; then
+            exit 0
+          else
+            exit 2
+          fi
+        else
+          exit 3
+        fi
+        ;;
+    showMe)
+    	echo $appDir/bin/apachectl $1
+    	exit
+	;;
+    *)
+        echo "Usage: $0 {graceful|restart|start|stop|status|showMe}"
+        exit 1
+        ;;
+esac
+exit 0
